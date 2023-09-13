@@ -5,7 +5,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Available Scripts
 
 In the project directory, you can run:
-
+### `open lids-app folder`
+### `npm start`
+### `npm install`
 ### `npm start`
 
 Runs the app in the development mode.\
