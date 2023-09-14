@@ -16,7 +16,7 @@ def main_menu():
     commands = ["Configure: Shows/SetsUp config file options",
                          "Display PCAP: Will Show the most recent pcap", 
                          "Display PCAP X: Will Show a specific pcap",
-                         "Display Alerts"
+                         "Display Alerts",
                          "Help: Show commands avaiable",
                          "Exit"]
     while True:
