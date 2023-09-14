@@ -1,44 +1,44 @@
+import typer
 from configure import configure_agent
 from displayPCAP import pcap_display_box
 from displayAlert import alert_display_box
-from displayPCAP import pcap_display_box, pcap_specific
+from displayPCAP import pcap_specific
 
-def display_window(title, options):
-    print(f"{'='*len(title)}")
-    print(title)
-    print(f"{'='*len(title)}")
+app = typer.Typer()
 
-    for i, option in enumerate(options, start=1):
-        print(f"{i}. {option}")
+@app.command()
+def configure():
+    """
+    Shows/Sets up config file options.
+    """
+    configure_agent()
 
-def main_menu():
-    agent_info = None
-    commands = ["Configure: Shows/SetsUp config file options",
-                         "Display PCAP: Will Show the most recent pcap", 
-                         "Display PCAP X: Will Show a specific pcap",
-                         "Display Alerts",
-                         "Help: Show commands avaiable",
-                         "Exit"]
-    while True:
-        display_window("The following are commands avaialble:", commands)
-        choice = int(input("Enter your choice: "))
+@app.command()
+def display_pcap():
+    """
+    Show the most recent pcap.
+    """
+    pcap_display_box()
 
-        if choice == 1:
-            agent_info = configure_agent()
-        elif choice == 2:
-            pcap_display_box()
-        elif choice == 3:
-            source = input("Enter the source: ")
-            pcap_specific(source)
-        elif choice == 4:
-            alert_display_box()
-        elif choice == 5:
-            print()
-            print("Available Commands are: \n", commands , "\n")
-        elif choice == 6:
-            break
-        else:
-            print("Invalid choice \n")
+@app.command()
+def display_pcap_specific(source: str):
+    """
+    Show a specific pcap.
 
-if __name__ == '__main__':
-    main_menu()
+    Args:
+        source (str): The source to display.
+    """
+    pcap_specific(source)
+
+@app.command()
+def display_alerts():
+    """
+    Display alerts.
+    """
+    alert_display_box()
+
+def main():
+    app()
+
+if __name__ == "__main__":
+    main()
