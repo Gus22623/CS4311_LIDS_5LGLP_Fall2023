@@ -1,4 +1,6 @@
 from configure import configure_agent
+from displayPCAP import pcap_display_box
+from displayAlert import alert_display_box
 from displayPCAP import pcap_display_box, pcap_specific
 
 def display_window(title, options):
@@ -14,6 +16,7 @@ def main_menu():
     commands = ["Configure: Shows/SetsUp config file options",
                          "Display PCAP: Will Show the most recent pcap", 
                          "Display PCAP X: Will Show a specific pcap",
+                         "Display Alerts"
                          "Help: Show commands avaiable",
                          "Exit"]
     while True:
@@ -28,9 +31,11 @@ def main_menu():
             source = input("Enter the source: ")
             pcap_specific(source)
         elif choice == 4:
+            alert_display_box()
+        elif choice == 5:
             print()
             print("Available Commands are: \n", commands , "\n")
-        elif choice == 5:
+        elif choice == 6:
             break
         else:
             print("Invalid choice \n")
