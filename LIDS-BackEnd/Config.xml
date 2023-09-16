@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<network>
+<system>
+	<name>Sebastian</name>
+	<ip>10.0.0.1</ip>
+	<mac>09-25-20-07-01-17</mac>
+	<ports>22,80,4444</ports>
+	<whitelist>10.0.0.2,10.0.0.3,10.0.0.4</whitelist>
+</system>
+
+<system>
+	<name>Diana</name>
+	<ip>10.0.0.2</ip>
+	<mac>09-22-20-11-00-00</mac>
+	<ports>22</ports>
+	<whitelist>10.0.0.1,10.0.0.3,10.0.0.5</whitelist>
+</system>
+
+<system>
+	<name>Ericka</name>
+	<ip>10.0.0.3</ip>
+	<mac>09-26-20-17-00-00</mac>
+	<ports>22</ports>
+	<whitelist>10.0.0.1,10.0.0.2,10.0.0.245</whitelist>
+</system>
+</network>
