@@ -12,8 +12,6 @@ configFile = None
 #serverPort = {Port of server}
 #alert = {Alert String}
 
-import xml.etree.ElementTree as ET
-
 def ingestConfig(configFile):
     try:
         # Load the XML configuration file
@@ -70,14 +68,14 @@ def ingestConfig(configFile):
     
 #     #Send the encrypted alert to LIDS-D agent
     
-# def niffTraffic():
+# def sniffTraffic():
 #     #Start packet capture and analysis
 #     while True:
 #         sniff(filter="ip", prn=analyze_packet)
 
 def main():
     configFile = input("Enter the name of the configuration file: ")
-    ingestConfig("Config.xml")
+    ingestConfig(configFile)
     
 if __name__ == "__main__":
     main()
