@@ -6,35 +6,44 @@ import SortByDropdown from '../SortByDropdown/SortByDropdown';
 import './LidsDashboard.css';
 
 function LidsDashboard() {
-  // Mock data for demonstration purposes
-  const [alerts, setAlerts] = useState([]); // You'd typically fetch this data or manage it in a global state
-  //eslint-disable-next-line
+  const [alerts, setAlerts] = useState([]);
   const [errors, setErrors] = useState([]);
-  //eslint-disable-next-line
   const [notifications, setNotifications] = useState([]);
+  const [connectionStatus, setConnectionStatus] = useState('Connected');
 
   const handleSort = (criteria) => {
-    // Implement sorting logic based on the criteria
-    // For example, if sorting alerts by level:
     if (criteria === 'Level') {
       const sortedAlerts = [...alerts].sort((a, b) => a.level - b.level);
       setAlerts(sortedAlerts);
     }
-    // Implement other sorting criteria similarly
+  };
+
+  const handleDisconnect = () => {
+    setConnectionStatus('Disconnected');
   };
 
   return (
     <div className="lids-dashboard">
       <div className="top-section">
-      <h1 className="h1-custom" style ={{textAlign: "center"}}>LIDS Dashboard</h1>
+      <button className="go-back-button">Go Back</button>
+        <h1 className="h1-custom">LIDS Dashboard</h1>
+      </div>
+      <div className="lids-ip-connection">
+        <div className="lids-ip">LIDS IP: 192.168.1.100</div>
+        <div></div>
+        <div className="connection-status">{connectionStatus}</div>
       </div>
       <div className="bottom-section">
-      <SortByDropdown onSort={handleSort} />
-      <AlertsDisplay alerts={alerts} />
-      <ErrorsDisplay errors={errors} />
-      <NotificationsDisplay notifications={notifications} />
+        <SortByDropdown onSort={handleSort} />
+        <AlertsDisplay alerts={alerts} />
+        <ErrorsDisplay errors={errors} />
+        <NotificationsDisplay notifications={notifications} />
       </div>
-      {/* Other components and logic for the dashboard */}
+      <div className="disconnect-button-container">
+        <button className="disconnect-button" onClick={handleDisconnect}>
+          Disconnect
+        </button>
+      </div>
     </div>
   );
 }

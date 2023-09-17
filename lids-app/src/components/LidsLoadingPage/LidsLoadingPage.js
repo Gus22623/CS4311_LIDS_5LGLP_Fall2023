@@ -21,7 +21,7 @@ function LidsLoadingPage({ onEnterPress }) {
   return (
     <div className="lids-loading-page">
       <div className="top-section">
-      <button style = {{backgroundColor : "LightGray", padding: "10px 20px"}}onClick={onEnterPress}>Main Menu</button>
+      {/* <button style = {{backgroundColor : "LightGray", padding: "10px 20px"}}onClick={onEnterPress}>Main Menu</button> */}
       <button style = {{backgroundColor : "LightGray", padding: "10px 20px"}}onClick={onEnterPress}>Go Back</button>
       <h1 className="h1-custom">LIDS</h1>
       </div>

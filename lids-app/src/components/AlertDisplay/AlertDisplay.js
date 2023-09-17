@@ -5,35 +5,50 @@ const AlertDisplay = () => {
   return (
     <div className="alert-display-container">
       <div className="header">
-        <button className="go-back-button">Go Back</button>
         <h1>ALERTS</h1>
       </div>
       <div className="table-container">
         <table className="alert-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>System Name</th>
-              <th>IP Address</th>
+              <th>Lvl</th>
+              <th>Time</th>
+              <th>IP</th>
+              <th>Port</th>
+              <th>Description</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="green-row">
-              <td>1992-05-25</td>
-              <td>Work Station 1</td>
-              <td>72.97.126.181</td>
+            <tr className="yellow-row">
+              <td>2</td>
+              <td>11.6565</td>
+              <td>192.168.0.8</td>
+              <td>88</td>
+              <td>Unknown host ping</td>
+            </tr>
+            <tr className="red-row">
+              <td>3</td>
+              <td>193.175.0.4</td>
+              <td>27</td>
+              <td>22</td>
+              <td>Port Scan</td>
             </tr>
             <tr className="gray-row">
-              <td>1997-09-16</td>
-              <td>Work Station 2</td>
-              <td>1.42.52.99</td>
+              <td>1</td>
+              <td>5.6565</td>
+              <td>191.156.0.2</td>
+              <td>56</td>
+              <td>Fail login attempts</td>
             </tr>
-            {/* Can add more rows*/}
+            {/* we can add more rows */}
           </tbody>
         </table>
       </div>
       <div className="export-button-container">
         <button className="export-button">Export Alerts</button>
+        <br />
+        <div className="button-spacing"></div>
+        <button className="disconnect-button">Disconnect</button>
       </div>
     </div>
   );
