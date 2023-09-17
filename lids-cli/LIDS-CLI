@@ -1,2 +1,21 @@
-import sys
-sys.path.append('/CS4311_LIDS__Team5_LGLP_Fall2023/LIDS-BackEnd/')
+import os, sys, re
+
+sys.ps1 = "~ " 
+def main():
+    os.write(1, "Welcome to LIDS\n".encode())
+    #getting current working directory / home
+    while(True):
+        # Displaying ~ in terminal
+        os.write(1,f"{sys.ps1}".encode()) 
+        user_input = os.read(0,800).decode().lower().split()
+            
+        # if there is no user input
+        if len(user_input) == 0:
+            continue
+        
+        # if user input is quit
+        if user_input[0] == "quit":
+            exit(0) 
+        
+if __name__ == "__main__":
+    main()
