@@ -1,4 +1,4 @@
-.lids-loading-page {
+.lids-dashboard {
     text-align: center; /* Center-align text */
     background-color: #434C56; 
     min-height: 100vh; /* Ensure a minimum height of the viewport */
@@ -11,14 +11,8 @@
   .h1-custom{
     color: white; /* White text color */
     font-family: 'Libre Baskerville', serif; 
+    text-align: center; /* Carlos - Alert text wont center, for some reason :( */
     
-  }
-
-  .gif-text{
-    color: gray;
-    text-align: right;
-    bottom: 100%;
-    font-size: small;
   }
   .top-section {
     background-color: #11253D; /* Background color for the top section */

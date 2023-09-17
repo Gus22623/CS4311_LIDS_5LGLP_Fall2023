@@ -12,7 +12,7 @@ function LidsInitialUI({ onUpload }) {
           <h1 className="h1-custom">- - - - - - - - - - - - -</h1>
         </div>
         <div className="bottom-section">
-          <button onClick={onUpload}>Load Config File</button>
+          <button style={{backgroundColor: "LighGray", padding: "10px 20px"}}onClick={onUpload}>Load Config File</button>
         </div>
     </div>
   );

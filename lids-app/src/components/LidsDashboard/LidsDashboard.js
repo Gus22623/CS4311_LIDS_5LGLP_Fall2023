@@ -3,6 +3,7 @@ import AlertsDisplay from '../AlertDisplay/AlertDisplay';
 import ErrorsDisplay from '../ErrorsDisplay/ErrorsDisplay';
 import NotificationsDisplay from '../NotificationsDisplay/NotificationsDisplay';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
+import './LidsDashboard.css';
 
 function LidsDashboard() {
   // Mock data for demonstration purposes
@@ -24,14 +25,15 @@ function LidsDashboard() {
 
   return (
     <div className="lids-dashboard">
-      <h1>LIDS Dashboard</h1>
-
+      <div className="top-section">
+      <h1 className="h1-custom" style ={{textAlign: "center"}}>LIDS Dashboard</h1>
+      </div>
+      <div className="bottom-section">
       <SortByDropdown onSort={handleSort} />
-
       <AlertsDisplay alerts={alerts} />
       <ErrorsDisplay errors={errors} />
       <NotificationsDisplay notifications={notifications} />
-
+      </div>
       {/* Other components and logic for the dashboard */}
     </div>
   );

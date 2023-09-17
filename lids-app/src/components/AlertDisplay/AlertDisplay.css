@@ -11,8 +11,8 @@ alert-display-container {
   }
   
   .go-back-button {
-    background-color: #007bff;
-    color: white;
+    background-color: lightgray;
+    color: black;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
@@ -50,8 +50,8 @@ alert-display-container {
   }
   
   .export-button {
-    background-color: #007bff;
-    color: white;
+    background-color: lightgray;
+    color: black;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
