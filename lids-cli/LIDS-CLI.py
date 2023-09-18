@@ -11,7 +11,6 @@ red_text = "\033[31mRed Text\033[0m"  # Red text, followed by a reset code to re
 green_text = "\033[32mGreen Text\033[0m"  # Green text, followed by a reset code
 yellow_text = "\033[33mYellow Text\033[0m"  # Yellow text, followed by a reset code
 sys.ps1 = "~ " 
-
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
                 "stop": "Stop the LIDS Program",
@@ -32,15 +31,19 @@ def main():
             os.write(1,f"{sys.ps1}".encode()) 
             # Reading user input
             user_input = os.read(0,800).decode().strip().lower()
-                
+            # User input is empty
             if len(user_input) == 0:
-                continue         
+                continue
+            # User input is quit         
             if user_input == "quit":
                 exit(0)
+            # Displaying help
             if user_input == "help":
                 for commands, description in commands_help.items():
                     os.write(1, f"{commands}:\t {description}\n".encode())
-                os.write(1, f"LOW - Low security risk labeled in green\nMEDIUM\n - Medium security risk labeled in yellow\033[31mHIGH\n - High security risk labeled in red\033[0m")
+                os.write(1, f"\033[32mLOW - Low security risk labeled in green\033[0m\n".encode())
+                os.write(1,f"\033[33mMEDIUM - Moderate security risk labeled in orange\033[0m\n".encode())
+                os.write(1,f"\033[31mHIGH - High security risk labeled in red\033[0m\n".encode())
                 continue
             if user_input == "start":
                 os.write(1, f"Starting LIDS...\n".encode())
@@ -62,19 +65,7 @@ def main():
                 continue
             else:
                 os.write(1, f"Invalid command: '{user_input}' type 'help' for commands.\n".encode())
-            
-            # # User input is quit
-            # if user_input[0] == "quit":
-            #     exit(0)
-                
-            # # Displaying help
-            # if user_input[0] == "help":
-            #     for commands, description in commands_help.items():
-            #         os.write(1, f"{commands}:\t {description}\n".encode())
-            #     continue    
-            # else:
-            #     os.write(1, f"Invalid command: '{user_input}' type 'help' for commands.\n".encode())
-                
+                continue
         except OSError:
             os.write(1, f"Error\n".encode())
         
