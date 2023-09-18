@@ -1,23 +1,54 @@
 .lids-dashboard {
-    text-align: center; /* Center-align text */
-    background-color: #434C56; 
-    min-height: 100vh; /* Ensure a minimum height of the viewport */
-    display: flex; /* Use flexbox for vertical centering */
-    flex-direction: column; /* Vertically align children */
-    
-    
-    
-  }
-  .h1-custom{
-    color: white; /* White text color */
-    font-family: 'Libre Baskerville', serif; 
-    text-align: center; /* Carlos - Alert text wont center, for some reason :( */
-    
-  }
-  .top-section {
-    background-color: #11253D; /* Background color for the top section */
-  }
-  
-  .bottom-section {
-    background-color: #434C56; /* Background color for the bottom section */
-  }
+  text-align: space-between;
+  background-color: #434C56;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.go-back-button {
+  background-color: lightgray;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.h1-custom {
+  color: white;
+  font-family: 'Libre Baskerville', serif;
+  text-align: center;
+}
+
+.lids-ip-connection {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background-color: #11253D;
+  padding: 10px;
+}
+
+.connection-status {
+  color: white;
+}
+
+.disconnect-button-container {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.disconnect-button {
+  background-color: lightgray;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.top-section {
+  background-color: #11253D;
+}
+
+.bottom-section {
+  background-color: #434C56;
+}

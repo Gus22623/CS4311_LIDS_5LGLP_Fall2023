@@ -1,5 +1,5 @@
 .lids-loading-page {
-    text-align: center; /* Center-align text */
+    text-align: space-between; /* Center-align text */
     background-color: #434C56; 
     min-height: 100vh; /* Ensure a minimum height of the viewport */
     display: flex; /* Use flexbox for vertical centering */
