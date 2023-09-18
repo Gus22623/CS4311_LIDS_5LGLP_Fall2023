@@ -1,9 +1,10 @@
-from scapy.all import sniff
-from scapy.layers.inet import IP, TCP
-# from cryptography.fernet import Fernet
 import xml.etree.ElementTree as ET
 import os, sys, re
+from socket import socket, AF_INET, SOCK_STREAM, SOCK_RAW, IPPROTO_TCP
+import threading
+import time 
 
+# Variables used in LIDS
 #stigFile = {JSON file containing STIG rules}
 configFile = None
 #maliciousPackets = []
@@ -12,6 +13,8 @@ configFile = None
 #serverPort = {Port of server}
 #alert = {Alert String}
 
+def test(int):
+    return 1
 def ingestConfig(configFile):
     try:
         # Load the XML configuration file
@@ -25,6 +28,7 @@ def ingestConfig(configFile):
             mac = system.find('mac').text
             ports = [int(port) for port in system.find('ports').text.split(',')]
             whitelist = system.find('whitelist').text.split(',')
+            
 
             print(f"Agent Name: {name}")
             print(f"IP Address: {ip}")
@@ -32,15 +36,17 @@ def ingestConfig(configFile):
             print(f"Ports: {ports}")
             print(f"Whitelist: {whitelist}\n")
 
+        return True
+
     except ET.ParseError:
         print("Error: Invalid XML file format.")
-        main()
+        return
     except FileNotFoundError:
         print("Error: File not found.")
-        main()
+        return
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        main()
+        return
         
 # def connectToServer():
 #     #TODO: Implement server connection logic here
@@ -73,9 +79,9 @@ def ingestConfig(configFile):
 #     while True:
 #         sniff(filter="ip", prn=analyze_packet)
 
-def main():
-    configFile = input("Enter the name of the configuration file: ")
-    ingestConfig(configFile)
+# def main():
+#     configFile = input("Enter the name of the configuration file: ")
+#     ingestConfig(configFile)
     
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
