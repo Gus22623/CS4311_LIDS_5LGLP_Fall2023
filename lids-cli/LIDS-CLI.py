@@ -11,6 +11,7 @@ red_text = "\033[31mRed Text\033[0m"  # Red text, followed by a reset code to re
 green_text = "\033[32mGreen Text\033[0m"  # Green text, followed by a reset code
 yellow_text = "\033[33mYellow Text\033[0m"  # Yellow text, followed by a reset code
 sys.ps1 = "~ " 
+
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
                 "stop": "Stop the LIDS Program",
@@ -42,7 +43,7 @@ def main():
                 for commands, description in commands_help.items():
                     os.write(1, f"{commands}:\t {description}\n".encode())
                 os.write(1, f"\033[32mLOW - Low security risk labeled in green\033[0m\n".encode())
-                os.write(1,f"\033[33mMEDIUM - Moderate security risk labeled in orange\033[0m\n".encode())
+                os.write(1,f"\033[33mMEDIUM - Moderate security risk labeled in yellow\033[0m\n".encode())
                 os.write(1,f"\033[31mHIGH - High security risk labeled in red\033[0m\n".encode())
                 continue
             if user_input == "start":

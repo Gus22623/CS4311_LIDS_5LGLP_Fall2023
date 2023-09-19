@@ -78,10 +78,3 @@ def ingestConfig(configFile):
 #     #Start packet capture and analysis
 #     while True:
 #         sniff(filter="ip", prn=analyze_packet)
-
-# def main():
-#     configFile = input("Enter the name of the configuration file: ")
-#     ingestConfig(configFile)
-    
-# if __name__ == "__main__":
-#     main()
