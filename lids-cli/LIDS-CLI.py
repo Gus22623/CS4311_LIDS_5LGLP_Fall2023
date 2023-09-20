@@ -30,6 +30,7 @@ def main():
         try:
             # Use os.write(1,f"Your Text {Variable}".encode()) to display text in terminal
             # Use os.read(0,800).decode() to read user input
+            # Test function
             
             # Displaying ~ in terminal
             os.write(1,f"{sys.ps1}".encode()) 
