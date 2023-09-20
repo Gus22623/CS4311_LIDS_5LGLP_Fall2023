@@ -28,6 +28,9 @@ def main():
     os.write(1, "Welcome to \033[31mLIDS\033[0m\n".encode())
     while(True):
         try:
+            # Use os.write(1,f"Your Text {Variable}".encode()) to display text in terminal
+            # Use os.read(0,800).decode() to read user input
+            
             # Displaying ~ in terminal
             os.write(1,f"{sys.ps1}".encode()) 
             # Reading user input
