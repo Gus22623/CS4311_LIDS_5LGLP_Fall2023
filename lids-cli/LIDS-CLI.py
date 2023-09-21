@@ -1,7 +1,6 @@
 import os, sys, re
 import socket
 from socket import socket, AF_INET, SOCK_STREAM
-from LIDS_Agent import test
 from LIDS_Agent import ingestConfig
 
 

@@ -13,8 +13,6 @@ configFile = None
 #serverPort = {Port of server}
 #alert = {Alert String}
 
-def test(int):
-    return 1
 def ingestConfig(configFile):
     try:
         # Load the XML configuration file
@@ -48,7 +46,45 @@ def ingestConfig(configFile):
         print(f"An error occurred: {str(e)}")
         return
         
-# def connectToServer():
+def connectToServer():
+    # Ask user for IP Address of server and Port #
+    serverIP = input("Provide server IP: ").strip()
+    port = int(input("Provide server port #: ").strip())
+
+    # Create a socket to send alerts to server from LIDS agent
+    try:
+        # Create socket to send alerts to server from LIDS agent to
+        lidsSocket = socket(AF_INET, SOCK_STREAM)
+        # connect to server
+        lidsSocket.connect((serverIP, port)) 
+
+        # Successfully connected to server
+        if lidsSocket:
+            print("LIDS Socket created and bound to port: ", port)
+            print("LIDS Socket bind complete")
+            
+            # create a new thread to handle the connection to the server
+            t = threading.Thread(target=clientHandler, args=(lidsSocket, serverIP, port))
+            t.start()
+            print("LIDS client started")
+
+
+
+            
+        snifferSocket = socket(AF_INET, SOCK_RAW, IPPROTO_TCP) # create socket to sniff traffic on network
+        snifferSocket.bind((serverIP, port)) # bind socket to server IP and port
+
+        #createSniffer = threading.Thread(target=snifferHandler, args=(snifferSocket, serverIP, port, lidsSocket))
+        snifferHandler(snifferSocket, serverIP, port, lidsSocket)
+        print("Sniffer started")
+    
+    except Exception as e:
+        print("Connection failed, retrying...", e)
+    
+    # close connections
+    lidsSocket.close()
+    snifferSocket.close()   
+
 #     #TODO: Implement server connection logic here
 #     pass
 
