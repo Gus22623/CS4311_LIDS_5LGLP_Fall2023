@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import AlertsDisplay from '../AlertDisplay/AlertDisplay';
-// import ErrorsDisplay from '../ErrorsDisplay/ErrorsDisplay';
-// import NotificationsDisplay from '../NotificationsDisplay/NotificationsDisplay';
+import ErrorsDisplay from '../ErrorsDisplay/ErrorsDisplay';
+import NotificationsDisplay from '../NotificationsDisplay/NotificationsDisplay';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
 import './LidsDashboard.css';
 
 function LidsDashboard() {
   const [alerts, setAlerts] = useState([]);
-  // const [errors, setErrors] = useState([]);
-  // const [notifications, setNotifications] = useState([]);
+  const [errors, setErrors] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState('Connected');
 
   const handleSort = (criteria) => {
@@ -36,8 +36,8 @@ function LidsDashboard() {
       <div className="bottom-section">
         <SortByDropdown onSort={handleSort} />
         <AlertsDisplay alerts={alerts} />
-        {/* <ErrorsDisplay errors={errors} />
-        <NotificationsDisplay notifications={notifications} /> */}
+        <ErrorsDisplay errors={errors} />
+        <NotificationsDisplay notifications={notifications} />
       </div>
       <div className="disconnect-button-container">
         <button className="disconnect-button" onClick={handleDisconnect}>
