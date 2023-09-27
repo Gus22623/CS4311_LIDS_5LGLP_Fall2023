@@ -12,6 +12,11 @@ configFile = None
 #serverAddress = {IP address of server}
 #serverPort = {Port of server}
 #alert = {Alert String}
+Names = []
+IPs = []
+whiteList = []
+MACList = []
+
 
 def ingestConfig(configFile):
     try:
@@ -26,6 +31,8 @@ def ingestConfig(configFile):
             mac = system.find('mac').text
             ports = [int(port) for port in system.find('ports').text.split(',')]
             whitelist = system.find('whitelist').text.split(',')
+            
+            # append information to lists
             
 
             print(f"Agent Name: {name}")
@@ -45,19 +52,15 @@ def ingestConfig(configFile):
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return
-        
-def connectToServer():
-    # Ask user for IP Address of server and Port #
-    serverIP = input("Provide server IP: ").strip()
-    port = int(input("Provide server port #: ").strip())
 
+
+def connectToServer():
     # Create a socket to send alerts to server from LIDS agent
     try:
         # Create socket to send alerts to server from LIDS agent to
         lidsSocket = socket(AF_INET, SOCK_STREAM)
         # connect to server
         lidsSocket.connect((serverIP, port)) 
-
         # Successfully connected to server
         if lidsSocket:
             print("LIDS Socket created and bound to port: ", port)
@@ -68,9 +71,6 @@ def connectToServer():
             t.start()
             print("LIDS client started")
 
-
-
-            
         snifferSocket = socket(AF_INET, SOCK_RAW, IPPROTO_TCP) # create socket to sniff traffic on network
         snifferSocket.bind((serverIP, port)) # bind socket to server IP and port
 
