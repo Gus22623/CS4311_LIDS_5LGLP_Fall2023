@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from db import cursor, db
 from xml.etree import ElementTree as ET
 
@@ -26,3 +26,18 @@ def upload_xml():
             db.commit()
 
     return "XML data successfully uploaded to MySQL"
+
+def getAlerts():
+    try:
+        # Fetch data from the 'alerts' table
+        cursor.execute("SELECT * FROM alert")
+        alerts = cursor.fetchall()
+
+         # Convert data to a list of dictionaries for JSON response
+        alerts_data = [{'alertID': alert[0], 'source_IP': alert[1], 'dest_IP': alert[2], 
+                        'sourcePort': alert[3], 'destPort': alert[4], 'reason': alert[5], 
+                        'severity': alert[6]} for alert in alerts]
+
+        return jsonify(alerts_data)
+    except Exception as e:
+        return str(e)
