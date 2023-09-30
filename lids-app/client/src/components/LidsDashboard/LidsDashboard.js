@@ -35,7 +35,7 @@ function LidsDashboard() {
       </div>
       <div className="bottom-section">
         <SortByDropdown onSort={handleSort} />
-        <AlertsDisplay alerts={alerts} />
+        <AlertsDisplay alerts={alerts} /> 
         <ErrorsDisplay errors={errors} />
         <NotificationsDisplay notifications={notifications} />
       </div>
