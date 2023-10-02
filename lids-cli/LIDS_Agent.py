@@ -1,8 +1,13 @@
 import xml.etree.ElementTree as ET
-import os, sys, re
 from socket import socket, AF_INET, SOCK_STREAM, SOCK_RAW, IPPROTO_TCP
 import threading
-import time 
+from datetime import datetime
+import pyshark
+
+"""
+NOTE: Use pip install pyshark to install pyshark
+Used to capture packets
+"""
 
 # Variables used in LIDS
 #stigFile = {JSON file containing STIG rules}
@@ -54,37 +59,7 @@ def ingestConfig(configFile):
         return
 
 
-def connectToServer():
-    # Create a socket to send alerts to server from LIDS agent
-    try:
-        # Create socket to send alerts to server from LIDS agent to
-        lidsSocket = socket(AF_INET, SOCK_STREAM)
-        # connect to server
-        lidsSocket.connect((serverIP, port)) 
-        # Successfully connected to server
-        if lidsSocket:
-            print("LIDS Socket created and bound to port: ", port)
-            print("LIDS Socket bind complete")
-            
-            # create a new thread to handle the connection to the server
-            t = threading.Thread(target=clientHandler, args=(lidsSocket, serverIP, port))
-            t.start()
-            print("LIDS client started")
-
-        snifferSocket = socket(AF_INET, SOCK_RAW, IPPROTO_TCP) # create socket to sniff traffic on network
-        snifferSocket.bind((serverIP, port)) # bind socket to server IP and port
-
-        #createSniffer = threading.Thread(target=snifferHandler, args=(snifferSocket, serverIP, port, lidsSocket))
-        snifferHandler(snifferSocket, serverIP, port, lidsSocket)
-        print("Sniffer started")
-    
-    except Exception as e:
-        print("Connection failed, retrying...", e)
-    
-    # close connections
-    lidsSocket.close()
-    snifferSocket.close()   
-
+# def connectToServer(): 
 #     #TODO: Implement server connection logic here
 #     pass
 
@@ -110,7 +85,33 @@ def connectToServer():
     
 #     #Send the encrypted alert to LIDS-D agent
     
-# def sniffTraffic():
+# def sniffTraffic(capture):
 #     #Start packet capture and analysis
-#     while True:
-#         sniff(filter="ip", prn=analyze_packet)
+
+# class PacketCapture:
+#     def __init__(self, interface='Wi-Fi', display_filter='tcp'):
+#         self.interface = interface
+#         self.display_filter = display_filter
+#         self.capture = pyshark.LiveCapture(interface=interface)
+#         self.capture_thread = None
+
+#     def start_capture(self):
+#         if self.capture_thread is None or not self.capture_thread.is_alive():
+#             print("Packet capture started. Type 'quit' to stop.")
+#             self.capture_thread = threading.Thread(target=self._capture_packets)
+#             self.capture_thread.start()
+
+#     def stop_capture(self):
+#         if self.capture_thread and self.capture_thread.is_alive():
+#             self.capture_thread.join()
+#             print("Packet capture stopped.")
+
+#     def _capture_packets(self):
+#         # Start capturing packets
+#         for packet in self.capture.sniff_continuously(packet_count=0):
+#             continue
+            
+#     def display_packets(self):
+#         # Display packets captured
+#         for packet in self.capture:
+#             print(packet)

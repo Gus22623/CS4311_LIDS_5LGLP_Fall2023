@@ -1,12 +1,12 @@
 import os, sys, re
-import socket
+import subprocess
 from socket import socket, AF_INET, SOCK_STREAM
 from LIDS_Agent import ingestConfig
-from LIDS_Agent import connectToServer
+import pyshark
+import threading
 
 
 # ANSI escape code for text color
-# Use these as a reference in case you want to use colored text in your code
 red_text = "\033[31mRed Text\033[0m"  # Red text, followed by a reset code to return to the default color
 green_text = "\033[32mGreen Text\033[0m"  # Green text, followed by a reset code
 yellow_text = "\033[33mYellow Text\033[0m"  # Yellow text, followed by a reset code
@@ -17,13 +17,57 @@ commands_help = {"start": "Start the LIDS Program",
                 "stop": "Stop the LIDS Program",
                 "quit": "Exit LIDS",
                 "help": "Display help for commands",
-                "configure": "Configure the LIDS Program with an XML file",
-                "display PCAPS": "Display the most recent pcap",
-                "display alerts": "Display alerts",
-                "display alert": "Display a specific alert"}
+                "config": "Configure the LIDS Program with an XML file",
+                "dpcap": "Display the most recent pcap",
+                "dalerts": "Display alerts",
+                "dalert": "Display a specific alert",
+                "spcap": "Stop displaying pcaps"}
 
+def open_pcap_file(pcap_file_path):
+    try:
+        # Launch Wireshark with the provided PCAP file path
+        subprocess.Popen(["wireshark", pcap_file_path])
+    except FileNotFoundError:
+        print("Wireshark is not installed or not in your system's PATH.")
+    except Exception as e:
+        print(f"Error opening PCAP file: {str(e)}")
+
+class PacketCapture:
+    def __init__(self, interface='Wi-Fi', display_filter='tcp'):
+        self.interface = interface
+        self.display_filter = display_filter
+        self.capture = pyshark.LiveCapture(interface=interface)
+        self.capture_thread = None
+        self.is_capturing = False
+        self._display_packets = False
+
+    def start_capture(self):
+        if not self.is_capturing:
+            print("Packet capture started in the background.")
+            self.is_capturing = True
+            self.capture_thread = threading.Thread(target=self._capture_packets)
+            self.capture_thread.start()
+
+    def stop_capture(self):
+        if self.is_capturing:
+            self.is_capturing = False
+            self.capture_thread.join()
+            print("Packet capture stopped.")
+
+    def _capture_packets(self):
+        for packet in self.capture.sniff_continuously(packet_count=0):
+            if not self.is_capturing:
+                break
+            print(packet)
+
+ 
 
 def main():
+    # Create an instance of PacketCapture
+    packet_capture = PacketCapture(interface="Wi-Fi")
+    # Flag to track if packet capture is active
+    capturing = False 
+
     # Displaying welcome message
     os.write(1, "Welcome to \033[31mLIDS\033[0m\n".encode())
     while(True):
@@ -36,11 +80,11 @@ def main():
             # Reading user input
             user_input = os.read(0,800).decode().strip().lower()
             
-            # User input is empty
+            # Empty user input
             if len(user_input) == 0:
                 continue
             
-            # User input is quit         
+            # Stopping LIDS        
             if user_input == "quit":
                 exit(0)
                 
@@ -53,15 +97,20 @@ def main():
                 os.write(1,f"\033[31mHIGH - High security risk labeled in red\033[0m\n".encode())
                 continue
             
+            # Starting packet capture
             if user_input == "start":
                 os.write(1, f"Starting LIDS...\n".encode())
+                packet_capture.start_capture()
                 continue
             
+            # Stopping packet capture
             if user_input == "stop":
                 os.write(1, f"Stopping LIDS...\n".encode())
+                packet_capture.stop_capture()
                 continue
             
-            if user_input == "configure":
+            # Configuring LIDS
+            if user_input == "config":
                 os.write(1, f"Please enter path to configuration file\n".encode())
                 configFile = os.read(0,800).decode().strip()
                 # Check if the method returns true, if so the config file was ingested successfully
@@ -70,14 +119,29 @@ def main():
                     os.write(1, f"Configuration file loaded successfully\n".encode())
                 continue
             
-            if user_input == "display pcaps":
+            # Displaying packet capture
+            if user_input == "dpcap":
                 os.write(1, f"Displaying PCAPS...\n".encode())
+                packet_capture.display_packets()
                 continue
             
-            if user_input == "display alerts":
+            # Stopping packet capture
+            if user_input == "spcap":
+                os.write(1, f"Stopping PCAPS...\n".encode())
+                packet_capture.stop_capture()
+                continue
+            
+            # Displaying all alerts
+            if user_input == "dalerts":
                 os.write(1, f"Displaying alerts...\n".encode())
                 continue
             
+            # Displaying a specific alert
+            if user_input == "dalert":
+                os.write(1, f"Displaying alert...\n".encode())
+                continue
+            
+            # If user input is not a command, display invalid command message
             else:
                 os.write(1, f"Invalid command: '{user_input}' type 'help' for commands.\n".encode())
                 continue
