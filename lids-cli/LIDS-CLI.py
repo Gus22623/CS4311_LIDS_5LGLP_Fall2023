@@ -1,16 +1,10 @@
-import os, sys, re
-import subprocess
-from socket import socket, AF_INET, SOCK_STREAM
+# LIDS-CLI.py: A command line interface for the LIDS program
+
+import os, sys
+from datetime import datetime
+from LIDS_Agent import PacketCapture
 from LIDS_Agent import ingestConfig
-import pyshark
-import threading
-
-
-# ANSI escape code for text color
-red_text = "\033[31mRed Text\033[0m"  # Red text, followed by a reset code to return to the default color
-green_text = "\033[32mGreen Text\033[0m"  # Green text, followed by a reset code
-yellow_text = "\033[33mYellow Text\033[0m"  # Yellow text, followed by a reset code
-sys.ps1 = "~ " 
+from LIDS_Agent import open_pcap_file
 
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
@@ -23,46 +17,10 @@ commands_help = {"start": "Start the LIDS Program",
                 "dalert": "Display a specific alert",
                 "spcap": "Stop displaying pcaps"}
 
-def open_pcap_file(pcap_file_path):
-    try:
-        # Launch Wireshark with the provided PCAP file path
-        subprocess.Popen(["wireshark", pcap_file_path])
-    except FileNotFoundError:
-        print("Wireshark is not installed or not in your system's PATH.")
-    except Exception as e:
-        print(f"Error opening PCAP file: {str(e)}")
-
-class PacketCapture:
-    def __init__(self, interface='Wi-Fi', display_filter='tcp'):
-        self.interface = interface
-        self.display_filter = display_filter
-        self.capture = pyshark.LiveCapture(interface=interface)
-        self.capture_thread = None
-        self.is_capturing = False
-        self._display_packets = False
-
-    def start_capture(self):
-        if not self.is_capturing:
-            print("Packet capture started in the background.")
-            self.is_capturing = True
-            self.capture_thread = threading.Thread(target=self._capture_packets)
-            self.capture_thread.start()
-
-    def stop_capture(self):
-        if self.is_capturing:
-            self.is_capturing = False
-            self.capture_thread.join()
-            print("Packet capture stopped.")
-
-    def _capture_packets(self):
-        for packet in self.capture.sniff_continuously(packet_count=0):
-            if not self.is_capturing:
-                break
-            print(packet)
-
- 
-
+# Main function
 def main():
+    # Set the prompt to ~
+    sys.ps1 = "~ " 
     # Create an instance of PacketCapture
     packet_capture = PacketCapture(interface="Wi-Fi")
     # Flag to track if packet capture is active
@@ -121,14 +79,10 @@ def main():
             
             # Displaying packet capture
             if user_input == "dpcap":
-                os.write(1, f"Displaying PCAPS...\n".encode())
-                packet_capture.display_packets()
-                continue
-            
-            # Stopping packet capture
-            if user_input == "spcap":
-                os.write(1, f"Stopping PCAPS...\n".encode())
-                packet_capture.stop_capture()
+                os.write(1, f"Please enter path to pcap file\n".encode())
+                os.write(1, f"Example: C:\\Users\\User\\Desktop\\pcap.pcapng\n".encode())
+                pcapFile = os.read(0,800).decode().strip()
+                open_pcap_file(pcapFile)
                 continue
             
             # Displaying all alerts
@@ -148,6 +102,7 @@ def main():
             
         except OSError:
             os.write(1, f"Error\n".encode())
-        
+            
+# Main function call      
 if __name__ == "__main__":
     main()

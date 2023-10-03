@@ -1,27 +1,19 @@
-import xml.etree.ElementTree as ET
-from socket import socket, AF_INET, SOCK_STREAM, SOCK_RAW, IPPROTO_TCP
-import threading
-from datetime import datetime
+# LIDS_Agent back end code.
+
+import os
 import pyshark
+import threading
+import subprocess
+from datetime import datetime
+import xml.etree.ElementTree as ET
+from socket import socket, AF_INET, SOCK_STREAM
 
 """
 NOTE: Use pip install pyshark to install pyshark
-Used to capture packets
+Wireshark needs to be installed in your machine to use pyshark
 """
 
-# Variables used in LIDS
-#stigFile = {JSON file containing STIG rules}
-configFile = None
-#maliciousPackets = []
-#alertList = []
-#serverAddress = {IP address of server}
-#serverPort = {Port of server}
-#alert = {Alert String}
-Names = []
-IPs = []
-whiteList = []
-MACList = []
-
+configurations = {}  # Dictionary to store configurations
 
 def ingestConfig(configFile):
     try:
@@ -37,14 +29,21 @@ def ingestConfig(configFile):
             ports = [int(port) for port in system.find('ports').text.split(',')]
             whitelist = system.find('whitelist').text.split(',')
             
-            # append information to lists
+            # Add the configuration to the dictionary
+            configurations[name] = {
+                'Name': name,
+                'IP Address': ip,
+                'MAC Address': mac,
+                'Ports': ports,
+                'Whitelist': whitelist
+            }
             
-
-            print(f"Agent Name: {name}")
-            print(f"IP Address: {ip}")
-            print(f"MAC Address: {mac}")
-            print(f"Ports: {ports}")
-            print(f"Whitelist: {whitelist}\n")
+            # Display the configuration
+            print(f"Agent Name: {configurations[name]['Name']}")
+            print(f"IP Address: {configurations[name]['IP Address']}")
+            print(f"MAC Address: {configurations[name]['MAC Address']}")
+            print(f"Ports: {configurations[name]['Ports']}")
+            print(f"Whitelist: {configurations[name]['Whitelist']}\n")
 
         return True
 
@@ -59,59 +58,128 @@ def ingestConfig(configFile):
         return
 
 
-# def connectToServer(): 
-#     #TODO: Implement server connection logic here
-#     pass
+def connectToServer(): 
+    #TODO: Implement server connection logic here
+    pass
+
+# Method to display saved PCAP file in Wireshark
+def open_pcap_file(pcap_file_path):
+    try:
+        """
+        NOTE: This code is not needed for the current implementation of the LIDS Agent
+        Debugging code to find the Wireshark executable path
+        Use yourPCAPFile.pcapng format for the PCAP file
+        """
+        # List of common Wireshark executable names on different platforms
+        # possible_executables = ["Wireshark.exe"]
 
 
-# def analyze_packet(packet):
-#     #TODO: Implement packet analysis logic here
-#     # Check for unknown IPs, port scans, failed login attempts, abnormal traffic
-#     pass
-# def generate_alert(event_type, details, timeStamp):
-#     alert = f"{event_type}: {details}: {timeStamp}"
-#     pass
-    
-# def display_alert(alert):
-#     #TODO: Implement alert display logic here
-#     print(alert)
-#     pass
+        # # Iterate through each directory in the PATH environment variable
+        # for directory in os.environ["PATH"].split(os.pathsep):
+        #     print(directory)
+        #     for executable in possible_executables:
+        #         executable_path = os.path.join(directory, executable)
+        #         if os.path.isfile(executable_path):
+        #             wireSharkPath = executable_path
+        #             print(f"Found Wireshark executable at: {wireSharkPath}")
+        #             print(f"Opening PCAP file: {pcap_file_path}")
+        #             # Launch Wireshark with the provided PCAP file path
+                    
+        """NOTE: Change the path to the Wireshark executable on your machine"""          
+        wireSharkPath = "C:\Program Files\Wireshark\Wireshark.exe"
+        subprocess.run([wireSharkPath, pcap_file_path])
+                    
+    except FileNotFoundError:
+        print("Wireshark is not installed or not in your system's PATH.")
+    except Exception as e:
+        print(f"Error opening PCAP file: {str(e)}")
 
-# def encrypt_and_send_alert(alert):
-#     #Encrypt the alert data
-#     key = Fernet.generate_key()
-#     cipher_suite = Fernet(key)
-#     cipher_text = cipher_suite.encrypt(alert)
-    
-#     #Send the encrypted alert to LIDS-D agent
-    
-# def sniffTraffic(capture):
-#     #Start packet capture and analysis
+# Class to handle packet capture
+class PacketCapture:
+    def __init__(self, interface='Wi-Fi'):
+        self.interface = interface
+        # self.display_filter = display_filter - NOTE: Removed this filter to capture all packets
+        self.capture = pyshark.LiveCapture(interface=interface)
+        self.capture_thread = None
+        self.is_capturing = False
+        self._display_packets = False
+        self.restart_timer = None  # Timer for thread restart
+        self.connection_attempts = {}  # Dictionary to track connection attempts
 
-# class PacketCapture:
-#     def __init__(self, interface='Wi-Fi', display_filter='tcp'):
-#         self.interface = interface
-#         self.display_filter = display_filter
-#         self.capture = pyshark.LiveCapture(interface=interface)
-#         self.capture_thread = None
+    # Method to start packet capture
+    def start_capture(self):
+        if not self.is_capturing:
+            print("Packet capture started in the background.")
+            self.is_capturing = True
+            self.capture_thread = threading.Thread(target=self._capture_packets)
+            self.capture_thread.start()
+            self.restart_timer = threading.Timer(120.0, self.restart_capture_thread)
+            self.restart_timer.daemon = True
+            self.restart_timer.start()  # Start the timer
 
-#     def start_capture(self):
-#         if self.capture_thread is None or not self.capture_thread.is_alive():
-#             print("Packet capture started. Type 'quit' to stop.")
-#             self.capture_thread = threading.Thread(target=self._capture_packets)
-#             self.capture_thread.start()
+    # Method to stop packet capture
+    def stop_capture(self):
+        if self.is_capturing:
+            self.is_capturing = False
+            self.capture_thread.join()
+            print("Packet capture stopped.")
 
-#     def stop_capture(self):
-#         if self.capture_thread and self.capture_thread.is_alive():
-#             self.capture_thread.join()
-#             print("Packet capture stopped.")
+    def _capture_packets(self):
+        for packet in self.capture.sniff_continuously(packet_count=0):
+            if not self.is_capturing:
+                break   
+            #------------------------------------------------------------------------------------#
+            # Packet information
+            time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            if 'IP' in packet:
+                src = packet.ip.src
+                dst = packet.ip.dst
 
-#     def _capture_packets(self):
-#         # Start capturing packets
-#         for packet in self.capture.sniff_continuously(packet_count=0):
-#             continue
+                if 'TCP' in packet:
+                    protocol = 'TCP'
+                    packet_length = int(packet.length)
+                    flags = packet.tcp.flags
+
+                    if 'SYN' in flags:
+                        description = 'TCP Handshake SYN'
+                    else:
+                        description = 'Other TCP Packet'
+                elif 'UDP' in packet:
+                    protocol = 'UDP'
+                    packet_length = int(packet.length)
+                    description = 'UDP Packet'
+                elif 'ICMP' in packet:
+                    protocol = 'ICMP'
+                    packet_length = int(packet.length)
+                    description = 'ICMP Packet'
+                elif 'ARP' in packet:
+                    protocol = 'ARP'
+                    packet_length = int(packet.length)
+                    description = 'ARP Packet'
+                elif 'HTTP' in packet:
+                    protocol = 'HTTP'
+                    packet_length = int(packet.length)
+                    description = 'HTTP Packet'
+                else:
+                    protocol = 'Other'
+                    packet_length = int(packet.length)
+                    description = "Unknown/Other Protocol"
+                
+                # Displaying packet information for debugging purposes
+                # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
+            #------------------------------------------------------------------------------------#
             
-#     def display_packets(self):
-#         # Display packets captured
-#         for packet in self.capture:
-#             print(packet)
+    # Restart the packet capture thread every 2 minutes
+    def restart_capture_thread(self):
+        if self.is_capturing:
+            self.is_capturing = False  # Stop the current capture thread
+            self.capture_thread.join()
+            print("Restarting packet capture thread after 2 minutes.")
+            self.is_capturing = True
+            self.capture_thread = threading.Thread(target=self._capture_packets)
+            self.capture_thread.start()
+            self.restart_timer = threading.Timer(120.0, self.restart_capture_thread)
+            self.restart_timer.daemon = True
+            self.restart_timer.start()  # Start the timer
+
+            

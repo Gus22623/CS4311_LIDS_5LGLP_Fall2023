@@ -1,7 +1,7 @@
 import os, sys, re
 import xml.etree.ElementTree as ET
 import threading
-from socket import socket, AF_INET, SOCK_STREAM, SOCK_RAW, IPPROTO_TCP
+from socket import socket, AF_INET, SOCK_STREAM
 
 def ingestConfig(configFile):
     try:
