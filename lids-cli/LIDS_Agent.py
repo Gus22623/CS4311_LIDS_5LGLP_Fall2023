@@ -66,28 +66,27 @@ def connectToServer():
 def open_pcap_file(pcap_file_path):
     try:
         """
-        NOTE: This code is not needed for the current implementation of the LIDS Agent
-        Currently Debugging code to find the Wireshark executable path
-        Use yourPCAPFile.pcapng format for the PCAP file
+        NOTE: Wireshark needs to be in your system's PATH environment variable, or you can specify the path to the Wireshark executable below
+              You may need to restart your machine after installing Wireshark for the PATH variable to be updated
+        NOTE: Use yourPcapFile.pcapng format for the PCAP file
         """
         # List of common Wireshark executable names on different platforms
-        # possible_executables = ["Wireshark.exe"]
+        possible_executables = ["Wireshark.exe"]
 
 
-        # # Iterate through each directory in the PATH environment variable
-        # for directory in os.environ["PATH"].split(os.pathsep):
-        #     print(directory)
-        #     for executable in possible_executables:
-        #         executable_path = os.path.join(directory, executable)
-        #         if os.path.isfile(executable_path):
-        #             wireSharkPath = executable_path
-        #             print(f"Found Wireshark executable at: {wireSharkPath}")
-        #             print(f"Opening PCAP file: {pcap_file_path}")
-        #             # Launch Wireshark with the provided PCAP file path
+        # Iterate through each directory in the PATH environment variable
+        for directory in os.environ["PATH"].split(os.pathsep):
+            for executable in possible_executables:
+                executable_path = os.path.join(directory, executable)
+                if os.path.isfile(executable_path):
+                    wireSharkPath = executable_path
+                    print(f"Found Wireshark executable at: {wireSharkPath}")
+                    print(f"Opening PCAP file: {pcap_file_path}")
+                    # Launch Wireshark with the provided PCAP file path
                     
-        """NOTE: Change the path to the Wireshark executable on your machine"""          
-        wireSharkPath = "C:\Program Files\Wireshark\Wireshark.exe"
-        subprocess.run([wireSharkPath, pcap_file_path])
+                    """NOTE: Placeholder in case the above implementation does not work. Change the path to the Wireshark executable on your machine"""          
+                    # wireSharkPath = "C:\Program Files\Wireshark\Wireshark.exe"
+                    subprocess.Popen([wireSharkPath, pcap_file_path])
                     
     except FileNotFoundError:
         print("Wireshark is not installed or not in your system's PATH.")
