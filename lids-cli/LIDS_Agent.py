@@ -9,8 +9,8 @@ import xml.etree.ElementTree as ET
 from socket import socket, AF_INET, SOCK_STREAM
 
 """
-NOTE: Use pip install pyshark to install pyshark
-Wireshark needs to be installed in your machine to use pyshark
+NOTE: Wireshark needs to be installed in your machine to use pyshark
+NOTE: Use 'pip install pyshark' to install pyshark
 """
 
 configurations = {}  # Dictionary to store configurations
@@ -67,7 +67,7 @@ def open_pcap_file(pcap_file_path):
     try:
         """
         NOTE: This code is not needed for the current implementation of the LIDS Agent
-        Debugging code to find the Wireshark executable path
+        Currently Debugging code to find the Wireshark executable path
         Use yourPCAPFile.pcapng format for the PCAP file
         """
         # List of common Wireshark executable names on different platforms
@@ -165,7 +165,12 @@ class PacketCapture:
                     packet_length = int(packet.length)
                     description = "Unknown/Other Protocol"
                 
-                # Displaying packet information for debugging purposes
+                """
+                NOTE:Displaying packet information for debugging purposes
+                Uncomment the following line to display packet information
+                | |
+                V V
+                """
                 # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
             #------------------------------------------------------------------------------------#
             
