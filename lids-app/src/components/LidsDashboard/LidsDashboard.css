@@ -10,8 +10,10 @@
   background-color: lightgray;
   color: black;
   border: none;
+  border-radius: 4px;
   padding: 10px 20px;
   cursor: pointer;
+  margin-left: 20px;
 }
 .h1-custom {
   color: white;
@@ -31,18 +33,20 @@
   color: white;
 }
 
-.disconnect-button-container {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
+
+.disconnect-button-top {
+  background-color: lightgray;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  color: black;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 20px;
 }
 
-.disconnect-button {
-  background-color: lightgray;
-  color: black;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
+.disconnect-button-top:hover {
+  background-color: #e63939;
 }
 
 .top-section {

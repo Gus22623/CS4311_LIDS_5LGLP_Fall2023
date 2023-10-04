@@ -26,6 +26,7 @@ function LidsDashboard() {
     <div className="lids-dashboard">
       <div className="top-section">
       <button className="go-back-button">Go Back</button>
+      <button className="disconnect-button-top" onClick={handleDisconnect}>Disconnect</button>
         <h1 className="h1-custom">LIDS Dashboard</h1>
       </div>
       <div className="lids-ip-connection">
@@ -38,11 +39,6 @@ function LidsDashboard() {
         <AlertsDisplay alerts={alerts} />
         <ErrorsDisplay errors={errors} />
         <NotificationsDisplay notifications={notifications} />
-      </div>
-      <div className="disconnect-button-container">
-        <button className="disconnect-button" onClick={handleDisconnect}>
-          Disconnect
-        </button>
       </div>
     </div>
   );
