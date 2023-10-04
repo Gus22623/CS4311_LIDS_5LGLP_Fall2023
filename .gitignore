@@ -9,6 +9,7 @@ __pycache__
 # testing
 /coverage
 
+venv
 # production
 /build
 
