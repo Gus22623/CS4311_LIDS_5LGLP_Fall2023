@@ -20,5 +20,10 @@ The page will reload when you make changes.
 
 # How To Run Lids CLI
 In the project directory, you can run:
-### `python main.py`
+### `LIDS-CLI.py`
+
+Wireshark needs to be installed in your machine in order to use pyshark.
+Pyshark is used to capture packets. 
+Import pyshark using 'pip install pyshark' and insert wireshark to your machine's main PATH.
+
 

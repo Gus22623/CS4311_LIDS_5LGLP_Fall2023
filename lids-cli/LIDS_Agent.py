@@ -4,6 +4,7 @@ import os
 import pyshark
 import threading
 import subprocess
+from scapy.all import *
 from datetime import datetime
 import xml.etree.ElementTree as ET
 from socket import socket, AF_INET, SOCK_STREAM
@@ -127,6 +128,7 @@ class PacketCapture:
         for packet in self.capture.sniff_continuously(packet_count=0):
             if not self.is_capturing:
                 break   
+
             #------------------------------------------------------------------------------------#
             # Packet information
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -173,6 +175,35 @@ class PacketCapture:
                 # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
             #------------------------------------------------------------------------------------#
             
+            # Check packet for malicious activity
+            # temp_pcap_file = 'temp_capture.pcap'
+            # try:
+            #     wrpcap(temp_pcap_file, packet, append=True)
+            # except Exception as e:
+            #     print(f"Error saving packet to PCAP file: {e}")
+            
+            # # Analyze the packet using Snort
+            # self.analyze_packet_with_snort(temp_pcap_file)
+            
+    #------------------------------------------------------------------------------------#
+    """
+    NOTE: Snort needs to be installed in your machine to use this method
+    Use 'pip install snort' to install snort
+    Use 'snort -V' to check if Snort is installed correctly
+    Currently debugging this method
+    """
+    # # Method to analyze a packet using Snort
+    # def analyze_packet_with_snort(self, pcap_file):
+    #     snort_process = subprocess.Popen(['snort', '-A', 'full', '-q', '-c', '/path/to/snort.conf', '-r', pcap_file],
+    #                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    #     stdout, stderr = snort_process.communicate()
+
+    #     # Process the Snort alerts (stdout) here
+    #     if "abnormal_behavior_detected" in stdout:
+    #         # Save the corresponding packet to a PCAP file
+    #         self.save_packet_to_pcap('abnormal_capture.pcap', pcap_file)
+    #------------------------------------------------------------------------------------#
+    
     # Restart the packet capture thread every 2 minutes
     def restart_capture_thread(self):
         if self.is_capturing:
