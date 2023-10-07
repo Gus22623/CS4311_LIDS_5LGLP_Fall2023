@@ -1,24 +1,25 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import logo from './loading_gif.gif';
 import './LidsLoadingPage.css';
 
 function LidsLoadingPage({ onEnterPress }) {
+  const navigate = useNavigate(); // Use the hook
   useEffect(() => {
     const timer = setTimeout(() => {
-      onEnterPress();
+      navigate('/dashboard'); // Navigate to the dashboard after 5 seconds
     }, 5000); // 5 seconds
 
     // Cleanup the timer when the component is unmounted
     return () => {
       clearTimeout(timer);
     };
-  }, [onEnterPress]);
+  }, [navigate]);
 
   return (
     <div className="lids-loading-page">
       <div className="top-section">
         {/* <button style = {{backgroundColor : "LightGray", padding: "10px 20px"}}onClick={onEnterPress}>Main Menu</button> */}
-        <button style = {{backgroundColor : "LightGray", padding: "10px 20px"}} onClick={onEnterPress}>Go Back</button>
         <h1 className="h1-custom">LIDS</h1>
       </div>
       <br></br>
