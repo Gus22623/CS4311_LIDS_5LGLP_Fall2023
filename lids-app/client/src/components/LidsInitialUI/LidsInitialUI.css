@@ -11,10 +11,13 @@
   .h1-custom{
     color: white; /* White text color */
     font-family: 'Libre Baskerville', serif; 
+    padding-top: 5px;
+    margin-top: 25px;
     
   }
   .top-section {
     background-color: #11253D; /* Background color for the top section */
+    height: 250px;
   }
   
   .bottom-section {
