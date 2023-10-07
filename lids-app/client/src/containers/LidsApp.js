@@ -30,6 +30,7 @@ function LidsApp() {
   const handleEnterPress = () => {
     setView('dashboard');
     console.log("HELPPP");
+    /*
     fetch('http://127.0.0.1:5000/getAlerts', {
       method: 'GET',
       headers: {
@@ -42,12 +43,14 @@ function LidsApp() {
       return response.json();
     })
     .then(data => {
+      var alerts = data;
       console.log(data);
 
     })
     .catch(error => {
       console.error('fetch error: ', error);
     });
+    */
   };
 
   return (

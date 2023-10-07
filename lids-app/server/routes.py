@@ -30,13 +30,50 @@ def upload_xml():
 def getAlerts():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert")
+        cursor.execute("SELECT level, time, source_ip, port, description FROM alert")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'alertID': alert[0], 'source_IP': alert[1], 'dest_IP': alert[2], 
-                        'sourcePort': alert[3], 'destPort': alert[4], 'reason': alert[5], 
-                        'severity': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'port': alert[3], 'desc': alert[4]} for alert in alerts]
+
+        return jsonify(alerts_data)
+    except Exception as e:
+        return str(e)
+    
+def get_alerts_level():
+    try:
+        # Fetch data from the 'alerts' table
+        cursor.execute("SELECT level, time, source_ip, port, description FROM alert ORDER BY level ASC")
+        alerts = cursor.fetchall()
+
+         # Convert data to a list of dictionaries for JSON response
+        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'port': alert[3], 'desc': alert[4]} for alert in alerts]
+
+        return jsonify(alerts_data)
+    except Exception as e:
+        return str(e)
+
+def get_alerts_time():
+    try:
+        # Fetch data from the 'alerts' table
+        cursor.execute("SELECT level, time, source_ip, port, description FROM alert ORDER BY time ASC")
+        alerts = cursor.fetchall()
+
+         # Convert data to a list of dictionaries for JSON response
+        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'port': alert[3], 'desc': alert[4]} for alert in alerts]
+
+        return jsonify(alerts_data)
+    except Exception as e:
+        return str(e)
+    
+def get_alerts_ip():
+    try:
+        # Fetch data from the 'alerts' table
+        cursor.execute("SELECT level, time, source_ip, port, description FROM alert ORDER BY source_ip ASC")
+        alerts = cursor.fetchall()
+
+         # Convert data to a list of dictionaries for JSON response
+        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'port': alert[3], 'desc': alert[4]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
