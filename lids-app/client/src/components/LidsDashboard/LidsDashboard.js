@@ -24,12 +24,12 @@ function LidsDashboard() {
 
   return (
     <div className="lids-dashboard">
-      <div className="top-section">
+      <div className="top-section-medium">
       <button className="go-back-button">Go Back</button>
         <h1 className="h1-custom">LIDS Dashboard</h1>
       </div>
       <div className="lids-ip-connection">
-        <div className="lids-ip">LIDS IP: 192.168.1.100</div>
+        <div className="lids-ip">LIDS IP: 192.168.1.100 </div>
         <div></div>
         <div className="connection-status">{connectionStatus}</div>
       </div>

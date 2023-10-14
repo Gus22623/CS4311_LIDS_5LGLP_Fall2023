@@ -21,7 +21,7 @@ function LidsInitialUI({ onUpload }) {
 
   return (
     <div className="lids-initial-ui">
-        <div className="top-section">
+        <div className="top-section-large">
           <h1 className="h1-custom">- - - - - - - - - - - - -</h1>
           <h1 className="h1-custom">Welcome to LIDS</h1>
           <h1 className="h1-custom">- - - - - - - - - - - - -</h1>

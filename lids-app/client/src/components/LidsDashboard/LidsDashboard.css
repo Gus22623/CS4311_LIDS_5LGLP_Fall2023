@@ -12,6 +12,8 @@
   border: none;
   padding: 10px 20px;
   cursor: pointer;
+  margin-top: 25px;
+  margin-left: 25px
 }
 .h1-custom {
   color: white;
@@ -25,10 +27,12 @@
   align-items: stretch;
   background-color: #11253D;
   padding: 10px;
+  color: white;
 }
 
 .connection-status {
-  color: white;
+  color: yellowgreen;
+  padding-left: 10px;
 }
 
 .disconnect-button-container {
@@ -45,10 +49,11 @@
   cursor: pointer;
 }
 
-.top-section {
-  background-color: #11253D;
-}
+ .top-section-medium {
+    background-color: #294893; /* Background color for the top section */
+    height: 150px;
+  }
 
 .bottom-section {
-  background-color: #434C56;
+  background-color: #9B9B9B;
 }
