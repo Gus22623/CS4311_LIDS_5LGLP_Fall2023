@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import MenuOptions from '../MenuOptions/MenuOptions';
 
 class NetworkInformation extends React.Component {
@@ -32,7 +33,9 @@ class NetworkInformation extends React.Component {
                 <button>View Node Map</button>
 
                 <MenuOptions />
-
+                <Link to="/network-map">
+                    <button>Network Map</button>
+                </Link>
             </div>
         );
     }
