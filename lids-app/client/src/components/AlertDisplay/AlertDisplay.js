@@ -44,12 +44,6 @@ const AlertDisplay = () => {
           </tbody>
         </table>
       </div>
-      <div className="export-button-container">
-        <button className="export-button">Export Alerts</button>
-        <br />
-        <div className="button-spacing"></div>
-        <button className="disconnect-button">Disconnect</button>
-      </div>
     </div>
   );
 };
