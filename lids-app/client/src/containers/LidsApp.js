@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LidsInitialUI from '../components/LidsInitialUI/LidsInitialUI';
 import LidsLoadingPage from '../components/LidsLoadingPage/LidsLoadingPage';
 import LidsDashboard from '../components/LidsDashboard/LidsDashboard';
+import AlertDisplay from '../components/AlertDisplay/AlertDisplay';
 
 function LidsApp() {
   const [view, setView] = useState('initial'); // 'initial', 'loading', or 'dashboard'
@@ -28,9 +29,10 @@ function LidsApp() {
   };
 
   const handleEnterPress = () => {
-    view('/dashboard');
-  };
 
+    view('dashboard');
+  };
+  
   return (
     <Router>
       <div className="lids-app">

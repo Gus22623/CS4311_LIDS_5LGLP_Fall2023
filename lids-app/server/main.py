@@ -13,5 +13,17 @@ def handle_upload():
 def get_alerts():
     return routes.getAlerts()
 
+@app.route('/getAlertsLevel', methods=['GET'])
+def get_alerts_level():
+    return routes.get_alerts_level()
+
+@app.route('/getAlertsTime', methods=['GET'])
+def get_alerts_time():
+    return routes.get_alerts_time()
+
+@app.route('/getAlertsIP', methods=['GET'])
+def get_alerts_ip():
+    return routes.get_alerts_ip()
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

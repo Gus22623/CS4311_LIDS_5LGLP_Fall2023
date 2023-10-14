@@ -1,5 +1,6 @@
 import React from 'react';
 import './AlertDisplay.css';
+import '../../containers/LidsApp';
 
 const AlertDisplay = () => {
   return (
