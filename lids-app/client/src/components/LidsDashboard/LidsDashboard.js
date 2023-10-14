@@ -3,6 +3,8 @@ import AlertsDisplay from '../AlertDisplay/AlertDisplay';
 import ErrorsDisplay from '../ErrorsDisplay/ErrorsDisplay';
 import NotificationsDisplay from '../NotificationsDisplay/NotificationsDisplay';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
+import LidsApp from '../../containers/LidsApp';
+import { useNavigate } from 'react-router-dom'; // Added import
 import './LidsDashboard.css';
 import Axios from "axios";
 
@@ -11,6 +13,7 @@ function LidsDashboard() {
   const [errors, setErrors] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [connectionStatus, setConnectionStatus] = useState('Connected');
+
   const [alertList, setAlertList] = useState([]);
   const [alertListLevel, setAlertListLevel  ] = useState([]);
   const [alertListTime, setAlertListTime  ] = useState([]);
@@ -38,6 +41,7 @@ function LidsDashboard() {
     };
   }, []); 
 
+  const navigate = useNavigate(); // Added hook
 
   const handleSort = (criteria) => {
     if (criteria === 'Level') {
@@ -81,10 +85,15 @@ function LidsDashboard() {
     setConnectionStatus('Disconnected');
   };
 
+  const handleGoBack = () => { // Added function
+    navigate('/');
+  };
+
   return (
     <div className="lids-dashboard">
       <div className="top-section">
-      <button className="go-back-button">Go Back</button>
+      <button className="go-back-button" onClick={handleGoBack}>Go Back</button>
+      <button className="disconnect-button-top" onClick={handleDisconnect}>Disconnect</button>
         <h1 className="h1-custom">LIDS Dashboard</h1>
       </div>
       <div className="lids-ip-connection">
@@ -199,11 +208,6 @@ function LidsDashboard() {
           
         <ErrorsDisplay errors={errors} />
         <NotificationsDisplay notifications={notifications} />
-      </div>
-      <div className="disconnect-button-container">
-        <button className="disconnect-button" onClick={handleDisconnect}>
-          Disconnect
-        </button>
       </div>
     </div>
   );

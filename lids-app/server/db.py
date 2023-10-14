@@ -3,7 +3,8 @@ import pymysql
 db = pymysql.connect(
     host='localhost',
     user='root',
-    database='lids-database',
-    port=3306
+
+    database='lids-app',
+    port=3301
 )
 cursor = db.cursor()

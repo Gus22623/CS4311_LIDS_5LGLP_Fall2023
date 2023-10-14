@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
 import './LidsInitialUI.css'; 
+import { useNavigate } from 'react-router-dom';
 
 function LidsInitialUI({ onUpload }) {
   const fileInputRef = useRef(null);
-
+  const navigate = useNavigate();
   const handleUpload = () => {
     fileInputRef.current.click();
+    navigate('/loading');
   }
 
   const handleFileChange = (event) => {
