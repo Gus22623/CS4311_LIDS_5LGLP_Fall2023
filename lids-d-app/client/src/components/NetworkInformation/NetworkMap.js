@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Added import
 //import * as d3 from 'd3';
 
 function DeviceNode({ device }) {
     const color = device.status === 'recognized' ? 'green' : 'red';
     return (
+        
         <circle cx={device.x} cy={device.y} r={10} fill={color} />
     );
 }
@@ -29,8 +31,25 @@ function NetworkMap() {
             });
     }, []);
     */
+    const navigate = useNavigate(); // Added hook
+
+    const handleConfigureServer = () => { // Added function
+        navigate('/config-server');
+      };
+    
+      const handleViewAlerts = () => {
+        navigate('/view-alerts')
+      };
+      
+      const handleNetworkInfo = () => {
+        navigate('/network-map')
+      };
+
     return (
         <div>
+            <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
+            <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
+            <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
             <svg width="400" height="400">
                 {devices.map(device => (
                     <DeviceNode key={device.id} device={device} />
