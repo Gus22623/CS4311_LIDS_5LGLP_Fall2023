@@ -1,6 +1,6 @@
 import React from 'react';
 import './AlertDisplay.css';
-import '../../containers/LidsApp';
+import '../../containers/LidsDApp';
 
 const AlertDisplay = () => {
   return (
@@ -16,6 +16,7 @@ const AlertDisplay = () => {
               <th>Time</th>
               <th>IP</th>
               <th>Port</th>
+              <th>Protocol</th>
               <th>Description</th>
             </tr>
           </thead>

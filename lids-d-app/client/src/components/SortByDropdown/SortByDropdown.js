@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './SortByDropdown.css'
 import Axios from "axios";
 
 function SortByDropdown({ onSort }) {
@@ -12,12 +13,12 @@ function SortByDropdown({ onSort }) {
 
   return (
     <div className="sort-by-dropdown">
-      <label>Sort by: </label>
+      <center-label>Sort Alerts By</center-label>
       <select value={selectedOption} onChange={handleChange}>
-        <option value="Level">Level</option>
-        <option value="Time">Time</option>
-        <option value="IP">IP</option>
-        <option value="None">None</option>
+        <option value="Level">Priority Level</option>
+        <option value="Time">Date</option>
+        <option value="IP">Source</option>
+        <option value="Protocol">Protocol</option>
       </select>
     </div>
   );

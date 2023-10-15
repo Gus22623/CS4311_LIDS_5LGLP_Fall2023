@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LidsInitialUI from '../components/LidsInitialUI/LidsInitialUI';
 import LidsLoadingPage from '../components/LidsLoadingPage/LidsLoadingPage';
 import LidsDashboard from '../components/LidsDashboard/LidsDashboard';
+import AlertDisplay from '../components/AlertDisplay/AlertDisplay';
 
 function LidsApp() {
   const [view, setView] = useState('initial'); // 'initial', 'loading', or 'dashboard'
@@ -18,25 +20,31 @@ function LidsApp() {
     .then(response => response.text())
     .then(data => {
       console.log(data);
-      setView('loading');
+      view('/loading');
     })
     .catch(error => {
       console.error('Error:', error);
-      setView('initial');
+      view('/');
     });
   };
 
   const handleEnterPress = () => {
-    setView('dashboard');
-  };
 
+    view('dashboard');
+  };
+  
   return (
-    <div className="lids-app">
-      {view === 'initial' && <LidsInitialUI onUpload={handleConfigUpload} />}
-      {view === 'loading' && <LidsLoadingPage onEnterPress={handleEnterPress} />}
-      {view === 'dashboard' && <LidsDashboard />}
-      {uploadedFile && <div><h2>Uploaded XML:</h2><pre>{uploadedFile}</pre></div>}
-    </div>
+    <Router>
+      <div className="lids-app">
+        <Routes>
+          <Route path="/" element={<LidsInitialUI onUpload={handleConfigUpload} />} />
+          <Route path="/loading" element={<LidsLoadingPage onEnterPress={handleEnterPress} />} />
+          <Route path="/dashboard" element={<LidsDashboard />} />
+        </Routes>
+      
+        {uploadedFile && <div><h2>Uploaded XML:</h2><pre>{uploadedFile}</pre></div>}
+      </div>
+    </Router>
   );
 }
 

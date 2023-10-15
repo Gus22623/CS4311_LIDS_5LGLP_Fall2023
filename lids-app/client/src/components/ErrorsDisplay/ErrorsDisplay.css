@@ -15,7 +15,8 @@ h1 {
 }
 
 .errors-table {
-  width: 100%;
+  width: 97.7%;
+  margin: 0 auto;
   border-collapse: collapse;
 }
 

@@ -25,5 +25,9 @@ def get_alerts_time():
 def get_alerts_ip():
     return routes.get_alerts_ip()
 
+@app.route('/getAlertsProtocol', methods=['GET'])
+def get_alerts_protocol():
+    return routes.get_alerts_protocol()
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
