@@ -86,7 +86,7 @@ def open_pcap_file(pcap_file_path):
                     # Launch Wireshark with the provided PCAP file path
                     
                     """NOTE: Placeholder in case the above implementation does not work. Change the path to the Wireshark executable on your machine"""          
-                    # wireSharkPath = "C:\Program Files\Wireshark\Wireshark.exe"
+                    # wireSharkPath = "C:\Program Files\Wireshark\Wireshark.exe" # ""<- Placeholder path""
                     subprocess.Popen([wireSharkPath, pcap_file_path])
                     
     except FileNotFoundError:
@@ -175,33 +175,15 @@ class PacketCapture:
                 # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
             #------------------------------------------------------------------------------------#
             
-            # Check packet for malicious activity
-            # temp_pcap_file = 'temp_capture.pcap'
-            # try:
-            #     wrpcap(temp_pcap_file, packet, append=True)
-            # except Exception as e:
-            #     print(f"Error saving packet to PCAP file: {e}")
-            
-            # # Analyze the packet using Snort
-            # self.analyze_packet_with_snort(temp_pcap_file)
+            # TODO: Implement packet analysis logic here
+
             
     #------------------------------------------------------------------------------------#
-    """
-    NOTE: Snort needs to be installed in your machine to use this method
-    Use 'pip install snort' to install snort
-    Use 'snort -V' to check if Snort is installed correctly
-    Currently debugging this method
-    """
-    # # Method to analyze a packet using Snort
-    # def analyze_packet_with_snort(self, pcap_file):
-    #     snort_process = subprocess.Popen(['snort', '-A', 'full', '-q', '-c', '/path/to/snort.conf', '-r', pcap_file],
-    #                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-    #     stdout, stderr = snort_process.communicate()
-
-    #     # Process the Snort alerts (stdout) here
-    #     if "abnormal_behavior_detected" in stdout:
-    #         # Save the corresponding packet to a PCAP file
-    #         self.save_packet_to_pcap('abnormal_capture.pcap', pcap_file)
+    
+    # Method to detect alerts
+    def detect_alert(self, packet):
+        # TODO: Implement alert detection logic here
+        pass
     #------------------------------------------------------------------------------------#
     
     # Restart the packet capture thread every 2 minutes
