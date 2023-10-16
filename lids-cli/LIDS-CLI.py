@@ -3,8 +3,8 @@
 import os, sys
 from datetime import datetime
 from LIDS_Agent import PacketCapture
-from LIDS_Agent import ingestConfig
 from LIDS_Agent import open_pcap_file
+from LIDS_Agent import config
 
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
