@@ -72,7 +72,8 @@ def main():
                 os.write(1, f"Please enter path to configuration file\n".encode())
                 configFile = os.read(0,800).decode().strip()
                 # Check if the method returns true, if so the config file was ingested successfully
-                ingestedSuccessfully = ingestConfig(configFile)
+                my_Config = config()
+                ingestedSuccessfully = my_Config.ingestConfig(configFile)
                 if ingestedSuccessfully == True:
                     os.write(1, f"Configuration file loaded successfully\n".encode())
                 continue
