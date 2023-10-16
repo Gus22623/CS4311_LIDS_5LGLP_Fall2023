@@ -99,7 +99,7 @@ def open_pcap_file(pcap_file_path):
         NOTE: Use yourPcapFile.pcapng format for the PCAP file
         """
         # List of common Wireshark executable names on different platforms
-        possible_executables = ["Wireshark.exe"]
+        possible_executables = ["wireshark","Wireshark.exe"]
 
 
         # Iterate through each directory in the PATH environment variable
