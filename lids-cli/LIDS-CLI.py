@@ -5,6 +5,7 @@ from datetime import datetime
 from LIDS_Agent import PacketCapture
 from LIDS_Agent import open_pcap_file
 from LIDS_Agent import config
+from LIDS_Agent import Alerts
 
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
@@ -70,12 +71,21 @@ def main():
             # Configuring LIDS
             if user_input == "config":
                 os.write(1, f"Please enter path to configuration file\n".encode())
-                configFile = os.read(0,800).decode().strip()
-                # Check if the method returns true, if so the config file was ingested successfully
-                my_Config = config()
-                ingestedSuccessfully = my_Config.ingestConfig(configFile)
-                if ingestedSuccessfully == True:
-                    os.write(1, f"Configuration file loaded successfully\n".encode())
+                configFilePath = os.read(0,800).decode().strip()
+
+                try:
+                    with open(configFilePath, 'r') as configFile:
+                        configData = configFile.read()
+
+                    # Check if the method returns true, if so the config file was ingested successfully
+                    my_Config = config()
+                    ingestedSuccessfully = my_Config.ingestConfig(configData)
+
+                    if ingestedSuccessfully == True:
+                        os.write(1, f"Configuration file loaded successfully\n".encode())
+
+                except FileNotFoundError:
+                    os.write(1, f"Error: File not found.\n".encode())
                 continue
             
             # Displaying packet capture
@@ -86,10 +96,18 @@ def main():
                 open_pcap_file(pcapFile)
                 continue
             
-            # Displaying all alerts
+           # Assuming your existing code...
+
             if user_input == "dalerts":
                 os.write(1, f"Displaying alerts...\n".encode())
+
+                alerts = Alerts()
+                alerts_table = alerts.displayAlerts()
+
+                os.write(1, f"{alerts_table}\n".encode())
+
                 continue
+
             
             # Displaying a specific alert
             if user_input == "dalert":
