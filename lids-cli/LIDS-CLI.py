@@ -62,8 +62,12 @@ def display_help():
 # Displaying commands on startup
 def display_commands():
     os.write(1, f"\nEnter a Command:\n".encode())
+    max_command_length = (
+        max(len(command) for command in commands_help.keys()) + 1
+    )  # +1 for the colon
     for command, description in commands_help.items():
-        os.write(1, f"{command}:\t {description}\n".encode())
+        formatted_command = f"{command}:".ljust(max_command_length)
+        os.write(1, f"{formatted_command} {description}\n".encode())
 
 
 # Main function
