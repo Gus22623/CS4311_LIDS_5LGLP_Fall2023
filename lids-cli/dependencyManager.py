@@ -4,17 +4,18 @@ import sys
 import shutil
 import subprocess
 
+dependencies = ["pyshark", "scapy", "pymysql", "prettytable"]
+
 
 def check_dependencies():
     """
     Install and Import and check all dependencies necessary for LIDS-CLI to run
     and conduct packet analysis
     """
-    dependencies = ["pyshark", "scapy"]
 
     try:
-        import pyshark
-        import scapy
+        for dependency in dependencies:
+            __import__(dependency)
     except ImportError:
         for dependency in dependencies:
             try:
@@ -27,8 +28,8 @@ def check_dependencies():
                 print(f"Error installing {dependency}: {e}")
                 sys.exit(1)
         try:
-            import pyshark
-            import scapy
+            for dependency in dependencies:
+                __import__(dependency)
         except ImportError:
             print("Error importing dependencies")
             sys.exit(1)
@@ -53,7 +54,7 @@ def find_wireshark():
                     break
         # Return the full path to the executable file.
         if executable_path:
-            #print(f"Wireshark executable found at {executable_path}")
+            # print(f"Wireshark executable found at {executable_path}")
             return executable_path
     print("Wireshark executable not found\nplease install Wireshark and try again")
     return None
@@ -66,13 +67,13 @@ def are_dependencies_satisfied():
     """
     # Check Python dependencies
     try:
-        import pyshark
-        import scapy
+        for dependency in dependencies:
+            __import__(dependency)
     except ImportError:
         check_dependencies()
         try:
-            import pyshark
-            import scapy
+            for dependency in dependencies:
+                __import__(dependency)
         except ImportError:
             return False
 

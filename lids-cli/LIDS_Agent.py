@@ -1,17 +1,16 @@
 # LIDS_Agent back end code.
-
 import os
-import sys
-import shutil
-import pyshark
 import threading
 import subprocess
 
+import xml.etree.ElementTree as ET
 from scapy.all import *
 from datetime import datetime
-import xml.etree.ElementTree as ET
+import pyshark
 
-#from dependencyChecker import find_wireshark
+from db import cursor, db
+from prettytable import PrettyTable
+from dependencyManager import find_wireshark
 
 
 class config:
@@ -20,34 +19,25 @@ class config:
 
     def ingestConfig(self, configFile):
         try:
-            # Load the XML configuration file
-            tree = ET.parse(configFile)
-            root = tree.getroot()
-
-            # Process the XML data
-            for system in root.findall("./system"):
+            # Parse the XML data
+            root = ET.fromstring(configFile)
+            for system in root.findall("system"):
                 name = system.find("name").text
                 ip = system.find("ip").text
                 mac = system.find("mac").text
-                ports = [int(port) for port in system.find("ports").text.split(",")]
-                whitelist = system.find("whitelist").text.split(",")
+                ports = system.find("ports").text
+                whitelist = system.find("whitelist").text
 
-                # Add the configuration to the dictionary
-                self.configurations[name] = {
-                    "Name": name,
-                    "IP Address": ip,
-                    "MAC Address": mac,
-                    "Ports": ports,
-                    "Whitelist": whitelist,
-                }
+                # Check if MAC address already exists in the database
+                sql_check_mac = f"SELECT * FROM config WHERE mac = '{mac}'"
+                cursor.execute(sql_check_mac)
+                result = cursor.fetchone()
 
-                # Display the configuration
-                print(f"Agent Name: {self.configurations[name]['Name']}")
-                print(f"IP Address: {self.configurations[name]['IP Address']}")
-                print(f"MAC Address: {self.configurations[name]['MAC Address']}")
-                print(f"Ports: {self.configurations[name]['Ports']}")
-                print(f"Whitelist: {self.configurations[name]['Whitelist']}\n")
-
+                if not result:
+                    # Insert data into MySQL database
+                    sql_insert = f"INSERT INTO config (name, ip, mac, ports, whitelist) VALUES ('{name}', '{ip}', '{mac}', '{ports}', '{whitelist}')"
+                    cursor.execute(sql_insert)
+                    db.commit()
             return True
 
         except ET.ParseError:
@@ -103,15 +93,8 @@ class PacketCapture:
         self.capture_thread = None
         self.is_capturing = False
         self._display_packets = False
-        self.restart_timer = None  # Timer for thread restart 
+        self.restart_timer = None  # Timer for thread restart
         self.connection_attempts = {}  # Dictionary to track connection attempts
-
-        self.user_dict = {"user1", "user2", "user3"}  # Authorized users
-        self.alerts = []  # Store alerts
-        self.alert_threshold = 5  # Threshold for multiple sign-in attempts
-        self.alert_window = timedelta(
-            minutes=5
-        )  # Time window for multiple sign-in attempts
 
     # Method to start packet capture
     def start_capture(self):
@@ -135,128 +118,207 @@ class PacketCapture:
         for packet in self.capture.sniff_continuously(packet_count=0):
             if not self.is_capturing:
                 break
+
             # ------------------------------------------------------------------------------------#
             # Packet information
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            if "IP" in packet:
+                src = packet.ip.src
+                dst = packet.ip.dst
 
-            # if 'IP' in packet:
-            #     src = packet.ip.src
-            #     dst = packet.ip.dst
+                if "TCP" in packet:
+                    protocol = "TCP"
+                    packet_length = int(packet.length)
+                    flags = packet.tcp.flags
 
-            #     if 'TCP' in packet:
-            #         protocol = 'TCP'
-            #         packet_length = int(packet.length)
-            #         flags = packet.tcp.flags
+                    if "SYN" in flags:
+                        description = "TCP Handshake SYN"
+                    else:
+                        description = "Other TCP Packet"
+                elif "UDP" in packet:
+                    protocol = "UDP"
+                    packet_length = int(packet.length)
+                    description = "UDP Packet"
+                elif "ICMP" in packet:
+                    protocol = "ICMP"
+                    packet_length = int(packet.length)
+                    description = "ICMP Packet"
+                elif "ARP" in packet:
+                    protocol = "ARP"
+                    packet_length = int(packet.length)
+                    description = "ARP Packet"
+                elif "HTTP" in packet:
+                    protocol = "HTTP"
+                    packet_length = int(packet.length)
+                    description = "HTTP Packet"
+                else:
+                    protocol = "Other"
+                    packet_length = int(packet.length)
+                    description = "Unknown/Other Protocol"
 
-            #         if 'SYN' in flags:
-            #             description = 'TCP Handshake SYN'
-            #         else:
-            #             description = 'Other TCP Packet'
-            #     elif 'UDP' in packet:
-            #         protocol = 'UDP'
-            #         packet_length = int(packet.length)
-            #         description = 'UDP Packet'
-            #     elif 'ICMP' in packet:
-            #         protocol = 'ICMP'
-            #         packet_length = int(packet.length)
-            #         description = 'ICMP Packet'
-            #     elif 'ARP' in packet:
-            #         protocol = 'ARP'
-            #         packet_length = int(packet.length)
-            #         description = 'ARP Packet'
-            #     elif 'HTTP' in packet:
-            #         protocol = 'HTTP'
-            #         packet_length = int(packet.length)
-            #         description = 'HTTP Packet'
-            #     else:
-            #         protocol = 'Other'
-            #         packet_length = int(packet.length)
-            #         description = "Unknown/Other Protocol"
+                """
+                NOTE:Displaying packet information for debugging purposes
+                Uncomment the following line to display packet information
+                | |
+                V V
+                """
+                # Create a dictionary to represent the packet
+                packet_info = {
+                    "Time": time,
+                    "Source": src,
+                    "Destination": dst,
+                    "Protocol": protocol,
+                    "Length": packet_length,
+                    "Description": description,
+                }
 
-            """
-            NOTE:Displaying packet information for debugging purposes
-            Uncomment the following line to display packet information
-            | |
-            V V
-            """
-            # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
+                # Pass the packet information to detect_alert method
+                self.detect_alert(packet_info)
+
+                # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
             # ------------------------------------------------------------------------------------#
-
-            # # TODO: Implement packet analysis logic here
-            # if 'IP' in packet:
-            #     src = packet.ip.src
-            #     dst = packet.ip.dst
-
-            #     if src not in self.user_dict:
-            #         self.detect_alert(packet, f"Unauthorized user detected: {src}")
-
-            #     if 'TCP' in packet:
-            #         protocol = 'TCP'
-            #         packet_length = int(packet.length)
-            #         flags = packet.tcp.flags
-
-            #         if 'SYN' in flags:
-            #             description = 'TCP Handshake SYN'
-            #             if self.is_port_scan(packet, src):
-            #                 self.detect_alert(packet, f"Port scan detected from {src}")
-            #         else:
-            #             description = 'Other TCP Packet'
+            # TODO: Implement packet analysis logic here
 
     # ------------------------------------------------------------------------------------#
 
-     # Restart the packet capture thread for a set time interval (2 Minutes default)
+    # Method to detect alerts
+    def detect_alert(self, packet):
+        if "IP" in packet:
+            src = packet.ip.src
+            dst = packet.ip.dst
+
+            # Check for Port Scan
+            if "TCP" in packet:
+                dst_port = int(packet.tcp.dstport)
+                cursor.execute(
+                    f"SELECT * FROM config WHERE ip = '{dst}' AND FIND_IN_SET({dst_port}, ports)"
+                )
+                result = cursor.fetchone()
+                if result is None:
+                    self.trigger_alert(packet, "Port Scan", "Medium")
+
+            # Check for Failed Login Attempt
+            if "TCP" in packet:
+                src_port = int(packet.tcp.srcport)
+                cursor.execute(
+                    f"SELECT * FROM config WHERE ip = '{src}' AND FIND_IN_SET({src_port}, ports)"
+                )
+                result = cursor.fetchone()
+                if result is not None:
+                    self.trigger_alert(packet, "Failed Login Attempt", "High")
+
+            # Check if the source or destination IP is Whitelisted
+            cursor.execute(
+                f"SELECT * FROM config WHERE (ip = '{src}' AND FIND_IN_SET('{dst}', whitelist)) OR (ip = '{dst}' AND FIND_IN_SET('{src}', whitelist))"
+            )
+            result = cursor.fetchone()
+            if result is not None:
+                return
+
+            # If none of the above conditions are met, trigger a default alert
+            self.trigger_alert(packet, "Unknown Activity", "Low")
+
+    # ------------------------------------------------------------------------------------#
+
+    def trigger_alert(self, packet, alert_type, severity):
+        time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        src = packet.ip.src
+        dst = packet.ip.dst
+        protocol = "Unknown"
+        if "TCP" in packet:
+            protocol = "TCP"
+        elif "UDP" in packet:
+            protocol = "UDP"
+        # Add more protocol checks if needed
+
+        # Map severity to level
+        level = 0
+        if severity == "High":
+            level = 3
+        elif severity == "Medium":
+            level = 2
+        elif severity == "Low":
+            level = 1
+
+        try:
+            # Insert the alert into the 'alerts' table
+            cursor.execute(
+                "INSERT INTO alerts (Lvl, Time, IP, Port, Description) VALUES (%s, %s, %s, %s, %s)",
+                (level, time, src, dst, alert_type),
+            )
+            db.commit()
+
+            print(
+                f"ALERT [{severity}]: {alert_type} detected and saved to the database."
+            )
+            print(
+                f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}"
+            )
+
+        except Exception as e:
+            print(f"Error occurred while saving alert to database: {e}")
+
+    # Restart the packet capture thread every 2 minutes
     def restart_capture_thread(self):
         if self.is_capturing:
             self.is_capturing = False  # Stop the current capture thread
             self.capture_thread.join()
-            print(f"Restarting packet capture thread after 2 minutes.")
+            print("Restarting packet capture thread after 2 minutes.")
             self.is_capturing = True
             self.capture_thread = threading.Thread(target=self._capture_packets)
             self.capture_thread.start()
             self.restart_timer = threading.Timer(120.0, self.restart_capture_thread)
             self.restart_timer.daemon = True
             self.restart_timer.start()  # Start the timer
-        else:
-            print("Capture thread is not currently running.")
-
-    # ------------------------------------------------------------------------------------#
-    # Method to detect alerts
-    def detect_alert(self, packet):
-        # TODO: Implement alert detection logic here
-        pass
 
 
-# ------------------------------------------------------------------------------------#
+class Alerts:
+    def __init__(self):
+        self.cursor = cursor
 
-
-
-# Open pcap file in wireshark itself 
-def open_pcap_file(pcap_file_path):
-    try:
-        wireSharkPath = find_wireshark()
-        print(f"Found Wireshark executable at: {wireSharkPath}")
-        print(f"Opening PCAP file: {pcap_file_path}")
-        # Launch Wireshark with the provided PCAP file path
-        if wireSharkPath:
-            """NOTE: Placeholder in case the above implementation does not work. Change the path to the Wireshark executable on your machine"""
-            # wireSharkPath = "C:\Program Files\Wireshark\Wireshark.exe" # ""<- Placeholder path""
-            subprocess.Popen([wireSharkPath, pcap_file_path])
-        else:
-            raise FileNotFoundError(
-                f"Unable to find Wireshark executable in the PATH environment variable. \
-                                        Please add the Wireshark directory to your PATH variable or specify the \
-                                        path to the Wireshark executable in the wireSharkPath variable."
+    def getAlerts(self):
+        try:
+            # Fetch data from the 'alerts' table
+            self.cursor.execute(
+                "SELECT level, time, source_ip, port, description FROM alert"
             )
-    except FileNotFoundError:
-        print("Wireshark is not installed or not in your system's PATH.")
-    except Exception as e:
-        print(f"Error opening PCAP file: {str(e)}")
+            alerts = self.cursor.fetchall()
 
+            # Convert data to a list of dictionaries for JSON response
+            alerts_data = [
+                {
+                    "level": alert[0],
+                    "time": alert[1],
+                    "source_ip": alert[2],
+                    "port": alert[3],
+                    "desc": alert[4],
+                }
+                for alert in alerts
+            ]
 
-def display_pcap_file(pcap_file_path):
-    try:
-        print(f"Opening PCAP file: {pcap_file_path}")
-        # Launch Wireshark with the provided PCAP file path
-        subprocess.Popen(["tshark", "-r", pcap_file_path])
-    except Exception as e:
-        print(f"Error opening PCAP file: {str(e)}")
+            return alerts_data
+        except Exception as e:
+            return str(e)
+
+    def displayAlerts(self):
+        alerts = self.getAlerts()
+
+        if isinstance(alerts, list):
+            # Create a pretty table
+            table = PrettyTable()
+            table.field_names = ["Level", "Time", "Source IP", "Port", "Description"]
+
+            for alert in alerts:
+                table.add_row(
+                    [
+                        alert["level"],
+                        alert["time"],
+                        alert["source_ip"],
+                        alert["port"],
+                        alert["desc"],
+                    ]
+                )
+
+            return str(table)
+        else:
+            return f"Error: {alerts}"
