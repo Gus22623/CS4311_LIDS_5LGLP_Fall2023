@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import AlertsDisplay from '../AlertDisplay/AlertDisplay';
-import ErrorsDisplay from '../ErrorsDisplay/ErrorsDisplay';
-import NotificationsDisplay from '../NotificationsDisplay/NotificationsDisplay';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
-import LidsApp from '../../containers/LidsApp';
+import LidsApp from '../../containers/LidsDApp';
 import { useNavigate } from 'react-router-dom'; // Added import
 import './LidsDashboard.css';
 import Axios from "axios";
@@ -18,6 +15,7 @@ function LidsDashboard() {
   const [alertListLevel, setAlertListLevel  ] = useState([]);
   const [alertListTime, setAlertListTime  ] = useState([]);
   const [alertListIP, setAlertListIP  ] = useState([]);
+  const [alertListProtocol, setAlertListProtocol ] = useState([]);
   const [criteria, setCriteria] = useState('');
 
   useEffect(() => {
@@ -78,26 +76,50 @@ function LidsDashboard() {
         .catch((error) => {
           console.error("Error fetching data:", error);
         });
-  };
+  }
+  if (criteria === 'Protocol') {
+    Axios.get('http://127.0.0.1:5000/getAlertsProtocol')
+      .then((response) => {
+        console.log(response.data);
+        setAlertListProtocol(response.data);
+        setCriteria('Protocol')
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+};
 }
 
   const handleDisconnect = () => {
     setConnectionStatus('Disconnected');
   };
 
-  const handleGoBack = () => { // Added function
-    navigate('/');
+  const handleConfigureServer = () => { // Added function
+    navigate('/config-server');
+  };
+
+  const handleViewAlerts = () => {
+    navigate('/view-alerts')
+  };
+  
+  const handleNetworkInfo = () => {
+    navigate('/network-map')
+  };
+  const handleExportAlerts = () => {
+    navigate('/export-alerts')
   };
 
   return (
     <div className="lids-dashboard">
       <div className="top-section">
-      <button className="go-back-button">Go Back</button>
-        <h1 className="h1-custom">LIDS Dashboard</h1>
+      
+      <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
+      <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
+      <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
+      <button className="go-back-button" onClick={handleExportAlerts}>Export Alerts</button>
+        <h1 className="h1-custom">LIDS D</h1>
       </div>
       <div className="lids-ip-connection">
-        <div className="lids-ip">LIDS IP: 192.168.1.100 </div>
-        <div></div>
         <div className="connection-status">{connectionStatus}</div>
       </div>
       <div className="bottom-section">
@@ -112,6 +134,7 @@ function LidsDashboard() {
                     <th>Time</th>
                     <th>IP</th>
                     <th>Port</th>
+                    <th>Protocol</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -122,6 +145,7 @@ function LidsDashboard() {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.port}</td>
+                      <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -137,6 +161,7 @@ function LidsDashboard() {
                     <th>Time</th>
                     <th>IP</th>
                     <th>Port</th>
+                    <th>Protocol</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -147,6 +172,7 @@ function LidsDashboard() {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.port}</td>
+                      <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -162,6 +188,7 @@ function LidsDashboard() {
                     <th>Time</th>
                     <th>IP</th>
                     <th>Port</th>
+                    <th>Protocol</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -172,13 +199,14 @@ function LidsDashboard() {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.port}</td>
+                      <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          ) : (
+          ) : criteria === "Protocol" ? (
             <div className="table-container">
               <table className="alert-table">
                 <thead>
@@ -187,6 +215,34 @@ function LidsDashboard() {
                     <th>Time</th>
                     <th>IP</th>
                     <th>Port</th>
+                    <th>Protocol</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alertListProtocol.map((val, index) => (
+                    <tr key={index}>
+                      <td>{val.level}</td>
+                      <td>{val.time}</td>
+                      <td>{val.source_ip}</td>
+                      <td>{val.port}</td>
+                      <td>{val.protocol}</td>
+                      <td>{val.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            ) : (
+            <div className="table-container">
+              <table className="alert-table">
+                <thead>
+                  <tr>
+                    <th>Lvl</th>
+                    <th>Time</th>
+                    <th>IP</th>
+                    <th>Port</th>
+                    <th>Protocol</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -197,6 +253,7 @@ function LidsDashboard() {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.port}</td>
+                      <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -205,8 +262,6 @@ function LidsDashboard() {
             </div>
           )}        
           
-        <ErrorsDisplay errors={errors} />
-        <NotificationsDisplay notifications={notifications} />
       </div>
     </div>
   );
