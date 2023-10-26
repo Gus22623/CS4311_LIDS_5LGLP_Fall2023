@@ -26,30 +26,49 @@ function ExportAlerts() {
         console.error("Error fetching data:", error);
       });
     };
-      const exportDataAsXML = () => {
-        Axios.get('http://127.0.0.1:5000/getAlerts', { responseType: 'blob' })
-          .then((response) => {
-            const url = URL.createObjectURL(response.data);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Alerts.xml';
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-          })
-          .catch((error) => {
-            console.error("Error fetching data:", error);
-          });
-        };   
+    const exportDataAsXML = () => {
+      Axios.get('http://127.0.0.1:5000/getAlerts')
+        .then((response) => {
+          const jsonData = response.data;
+    
+          const convertToXML = (obj) => {
+            let xml = '';
+            obj.forEach((item) => {
+              xml += '<Alert>\n'; 
+              for (const key in item) {
+                xml += `  <${key}>${item[key]}</${key}>\n`; 
+              }
+              xml += '</Alert>\n'; 
+            });
+            return xml;
+          };
+    
+          const xmlData = `<?xml version="1.0" encoding="UTF-8"?>\n<Alerts>\n${convertToXML(jsonData)}</Alerts>`; 
+          const blob = new Blob([xmlData], { type: 'text/xml' });
+          const url = URL.createObjectURL(blob);
+    
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Alerts.xml';
+          a.style.display = 'none';
+          document.body.appendChild(a);
+    
+          a.click();
+    
+          a.remove();
+          URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error);
+        });
+    };
+     
         
 const exportDataAsCSV = () => {
   Axios.get('http://127.0.0.1:5000/getAlerts')
     .then((response) => {
       const alertList = response.data;
 
-      // Convert JSON data to CSV format
       const jsonToCsv = (jsonData) => {
         const header = Object.keys(jsonData[0]).join(',');
         const csvData = jsonData.map((record) => {
