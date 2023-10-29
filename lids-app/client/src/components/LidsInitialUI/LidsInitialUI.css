@@ -1,6 +1,6 @@
 .lids-initial-ui {
     text-align: center; /* Center-align text */
-    background-color: #434C56; 
+    background-color: #9B9B9B; 
     min-height: 100vh; /* Ensure a minimum height of the viewport */
     display: flex; /* Use flexbox for vertical centering */
     flex-direction: column; /* Vertically align children */
@@ -8,15 +8,17 @@
     
     
   }
+  
   .h1-custom{
     color: white; /* White text color */
     font-family: 'Libre Baskerville', serif; 
-    
+    padding-top: 25px;
   }
-  .top-section {
-    background-color: #11253D; /* Background color for the top section */
+  .top-section-large {
+    background-color: #294893; /* Background color for the top section */
+    height: 250px;
   }
   
   .bottom-section {
-    background-color: #434C56; /* Background color for the bottom section */
+    background-color: #9B9B9B; /* Background color for the bottom section */
   }

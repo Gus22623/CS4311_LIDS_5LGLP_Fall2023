@@ -105,6 +105,9 @@ function LidsDashboard() {
   const handleNetworkInfo = () => {
     navigate('/network-map')
   };
+  const handleExportAlerts = () => {
+    navigate('/export-alerts')
+  };
 
   return (
     <div className="lids-dashboard">
@@ -113,6 +116,7 @@ function LidsDashboard() {
       <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
       <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
       <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
+      <button className="go-back-button" onClick={handleExportAlerts}>Export Alerts</button>
         <h1 className="h1-custom">LIDS D</h1>
       </div>
       <div className="lids-ip-connection">
