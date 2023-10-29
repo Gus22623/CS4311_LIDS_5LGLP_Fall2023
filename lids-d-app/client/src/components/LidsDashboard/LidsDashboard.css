@@ -13,8 +13,6 @@
   border-radius: 4px;
   padding: 10px 20px;
   cursor: pointer;
-  margin-top: 25px;
-  margin-left: 20px;
 }
 .h1-custom {
   color: white;
@@ -28,10 +26,12 @@
   align-items: stretch;
   background-color: #11253D;
   padding: 10px;
+  color: white;
 }
 
 .connection-status {
-  color: white;
+  color: yellowgreen;
+  padding-left: 10px;
 }
 
 
@@ -50,10 +50,39 @@
   background-color: #e63939;
 }
 
-.top-section {
-  background-color: #11253D;
-}
+ .top-section-medium {
+    background-color: #294893; /* Background color for the top section */
+    height: 150px;
+  }
 
 .bottom-section {
-  background-color: #434C56;
+  background-color: #9B9B9B;
+}
+
+.filter-section {
+  background-color: #11253D ;
+  padding: 20px;
+}
+
+.filter-table {
+  width: 75%;
+  border-collapse: collapse;
+  background-color: #9B9B9B;
+  margin-left: 200px;
+}
+
+.level-1 {
+  background-color: rgba(255, 255, 255, 0.5);
+  opacity: 0.5;
+  color: black
+}
+
+.level-2 {
+  background-color: rgba(255, 255, 0, 0.5);
+  color: rgb(100, 100, 0);
+}
+
+.level-3 {
+  background-color: rgba(255, 0, 0, 0.5);
+  color: rgb(100, 0, 0);
 }

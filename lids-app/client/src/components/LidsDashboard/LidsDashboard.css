@@ -58,3 +58,31 @@
 .bottom-section {
   background-color: #9B9B9B;
 }
+
+.filter-section {
+  background-color: #11253D ;
+  padding: 20px;
+}
+
+.filter-table {
+  width: 75%;
+  border-collapse: collapse;
+  background-color: #9B9B9B;
+  margin-left: 200px;
+}
+
+.level-1 {
+  background-color: rgba(255, 255, 255, 0.5);
+  opacity: 0.5;
+  color: black
+}
+
+.level-2 {
+  background-color: rgba(255, 255, 0, 0.5);
+  color: rgb(100, 100, 0);
+}
+
+.level-3 {
+  background-color: rgba(255, 0, 0, 0.5);
+  color: rgb(100, 0, 0);
+}

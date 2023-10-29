@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Switch} from 'react';
 import AlertsDisplay from '../AlertDisplay/AlertDisplay';
 import ErrorsDisplay from '../ErrorsDisplay/ErrorsDisplay';
 import NotificationsDisplay from '../NotificationsDisplay/NotificationsDisplay';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
+import SortByDropdownFilter from '../SortByDropdownFilter/SortByDropDownFilter';
 import LidsApp from '../../containers/LidsApp';
 import { useNavigate } from 'react-router-dom'; // Added import
 import './LidsDashboard.css';
@@ -19,6 +20,13 @@ function LidsDashboard() {
   const [alertListTime, setAlertListTime  ] = useState([]);
   const [alertListIP, setAlertListIP  ] = useState([]);
   const [criteria, setCriteria] = useState('');
+  const [filterCriteria, setFilterCriteria] = useState('');
+  const [ filterLevel1, setFilterLevel1 ] = useState([]);
+  const [ filterLevel2, setFilterLevel2 ] = useState([]);
+  const [ filterLevel3, setFilterLevel3 ] = useState([]);
+  const [alertListLevel1, setAlertListLevel1  ] = useState([]);
+  const [alertListLevel2, setAlertListLevel2 ] = useState([]);
+  const [alertListLevel3, setAlertListLevel3  ] = useState([]);
 
   useEffect(() => {
     const ourRequest = Axios.CancelToken.source()
@@ -81,6 +89,42 @@ function LidsDashboard() {
   };
 }
 
+const handleFilter = (criteria) => {
+  if (criteria === '1') {
+    Axios.get('http://127.0.0.1:5000/filterLevel_1')
+      .then((response) => {
+        console.log(response.data);
+        setAlertListLevel1(response.data);
+        setFilterCriteria('1')
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }
+  if (criteria === '2') {
+    Axios.get('http://127.0.0.1:5000/filterLevel_2')
+      .then((response) => {
+        console.log(response.data);
+        setAlertListLevel2(response.data);
+        setFilterCriteria('2')
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }
+  if (criteria === '3') {
+    Axios.get('http://127.0.0.1:5000/filterLevel_3')
+      .then((response) => {
+        console.log(response.data);
+        setAlertListLevel3(response.data);
+        setFilterCriteria('3')
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+};
+}
+
   const handleDisconnect = () => {
     setConnectionStatus('Disconnected');
   };
@@ -96,13 +140,104 @@ function LidsDashboard() {
         <h1 className="h1-custom">LIDS Dashboard</h1>
       </div>
       <div className="lids-ip-connection">
-        <div className="lids-ip">LIDS IP: 192.168.1.100 </div>
+        <div className="lids-ip">LIDS IP: 127.0.0.1 </div>
         <div></div>
         <div className="connection-status">{connectionStatus}</div>
       </div>
       <div className="bottom-section">
-        <SortByDropdown onSort={handleSort} />
-        {/* <AlertsDisplay alerts={alerts} /> */}
+        <SortByDropdownFilter onSort={handleFilter} />
+        {filterCriteria === "1" ? (
+            <div className="filter-section">
+              <table className="filter-table">
+                <thead>
+                  <tr>
+                    <th>Lvl</th>
+                    <th>Time</th>
+                    <th>Source IP</th>
+                    <th>Dest IP</th>
+                    <th>Port</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alertListLevel1.map((val, index) => (
+                    <tr key={index} className={`level-${val.level}`}>
+                      <td>{val.level}</td>
+                      <td>{val.time}</td>
+                      <td>{val.source_ip}</td>
+                      <td>{val.dest_ip}</td>
+                      <td>{val.port}</td>
+                      <td>{val.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : filterCriteria === "2" ? (
+            <div className="filter-section">
+              <table className="filter-table">
+                <thead>
+                  <tr>
+                    <th>Lvl</th>
+                    <th>Time</th>
+                    <th>Source IP</th>
+                    <th>Dest IP</th>
+                    <th>Port</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alertListLevel2.map((val, index) => (
+                    <tr key={index} className={`level-${val.level}`}>
+                      <td>{val.level}</td>
+                      <td>{val.time}</td>
+                      <td>{val.source_ip}</td>
+                      <td>{val.dest_ip}</td>
+                      <td>{val.port}</td>
+                      <td>{val.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : filterCriteria === "3" ? (
+            <div className="filter-section">
+              <table className="filter-table">
+                <thead>
+                  <tr>
+                    <th>Lvl</th>
+                    <th>Time</th>
+                    <th>Source IP</th>
+                    <th>Dest IP</th>
+                    <th>Port</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alertListLevel3.map((val, index) => (
+                    <tr key={index} className={`level-${val.level}`}>
+                      <td>{val.level}</td>
+                      <td>{val.time}</td>
+                      <td>{val.source_ip}</td>
+                      <td>{val.dest_ip}</td>
+                      <td>{val.port}</td>
+                      <td>{val.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="fitler-section">
+              <table className="filter-table">
+              </table>
+            </div>
+          )}
+
+        {/*END OF FILTER */}
+
+      <SortByDropdown onSort={handleSort} />
+
         {criteria === "Level" ? (
             <div className="table-container">
               <table className="alert-table">
@@ -110,17 +245,19 @@ function LidsDashboard() {
                   <tr>
                     <th>Lvl</th>
                     <th>Time</th>
-                    <th>IP</th>
+                    <th>Source IP</th>
+                    <th>Dest IP</th>
                     <th>Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListLevel.map((val, index) => (
-                    <tr key={index}>
+                    <tr key={index} className={`level-${val.level}`}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
+                      <td>{val.dest_ip}</td>
                       <td>{val.port}</td>
                       <td>{val.desc}</td>
                     </tr>
@@ -135,17 +272,19 @@ function LidsDashboard() {
                   <tr>
                     <th>Lvl</th>
                     <th>Time</th>
-                    <th>IP</th>
+                    <th>Source IP</th>
+                    <th>Dest IP</th>
                     <th>Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListTime.map((val, index) => (
-                    <tr key={index}>
+                    <tr key={index} className={`level-${val.level}`}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
+                      <td>{val.dest_ip}</td>
                       <td>{val.port}</td>
                       <td>{val.desc}</td>
                     </tr>
@@ -160,17 +299,19 @@ function LidsDashboard() {
                   <tr>
                     <th>Lvl</th>
                     <th>Time</th>
-                    <th>IP</th>
+                    <th>Source IP</th>
+                    <th>Dest IP</th>
                     <th>Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListIP.map((val, index) => (
-                    <tr key={index}>
+                    <tr key={index} className={`level-${val.level}`}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
+                      <td>{val.dest_ip}</td>
                       <td>{val.port}</td>
                       <td>{val.desc}</td>
                     </tr>
@@ -185,17 +326,19 @@ function LidsDashboard() {
                   <tr>
                     <th>Lvl</th>
                     <th>Time</th>
-                    <th>IP</th>
+                    <th>Source IP</th>
+                    <th>Dest IP</th>
                     <th>Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertList.map((val, index) => (
-                    <tr key={index}>
+                    <tr key={index} className={`level-${val.level}`}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
+                      <td>{val.dest_ip}</td>
                       <td>{val.port}</td>
                       <td>{val.desc}</td>
                     </tr>
