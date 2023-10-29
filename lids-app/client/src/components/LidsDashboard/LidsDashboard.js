@@ -3,7 +3,7 @@ import AlertsDisplay from '../AlertDisplay/AlertDisplay';
 import ErrorsDisplay from '../ErrorsDisplay/ErrorsDisplay';
 import NotificationsDisplay from '../NotificationsDisplay/NotificationsDisplay';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
-import SortByDropdownFilter from '../SortByDropdownFilter/SortByDropDownFilter';
+import SortByDropdownFilter from '../SortByDropdownFilter/SortByDropdownFilter';
 import LidsApp from '../../containers/LidsApp';
 import { useNavigate } from 'react-router-dom'; // Added import
 import './LidsDashboard.css';
