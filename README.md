@@ -1,7 +1,7 @@
 # How To Run Lids App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
+Test
 In the project directory, you can run:
 ### `open lids-app folder`
 ### `npm install`
