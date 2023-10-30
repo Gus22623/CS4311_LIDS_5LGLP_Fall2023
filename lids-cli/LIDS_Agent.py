@@ -1,3 +1,8 @@
+###########################################################
+# @author
+# @version
+###########################################################
+
 import xml.etree.ElementTree as ET
 import os, sys, re
 from socket import socket, AF_INET, SOCK_STREAM, SOCK_RAW, IPPROTO_TCP
