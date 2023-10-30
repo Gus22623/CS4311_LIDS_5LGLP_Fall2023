@@ -5,6 +5,8 @@ from datetime import datetime
 from LIDS_Agent import PacketCapture
 from LIDS_Agent import open_pcap_file
 from LIDS_Agent import config
+from LIDS_Agent import connectToServer
+
 
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
@@ -15,7 +17,8 @@ commands_help = {"start": "Start the LIDS Program",
                 "dpcap": "Display the most recent pcap",
                 "dalerts": "Display alerts",
                 "dalert": "Display a specific alert",
-                "spcap": "Stop displaying pcaps"}
+                "spcap": "Stop displaying pcaps",
+                "replay": "Replay a pcap file"}
 
 # Main function
 def main():
@@ -23,6 +26,8 @@ def main():
     sys.ps1 = "~ " 
     # Create an instance of PacketCapture
     packet_capture = PacketCapture(interface="Wi-Fi")
+    my_Config = config()
+
     # Flag to track if packet capture is active
     capturing = False 
 
@@ -58,8 +63,14 @@ def main():
             # Starting packet capture
             if user_input == "start":
                 os.write(1, f"Starting LIDS...\n".encode())
-                packet_capture.start_capture()
-                continue
+                if packet_capture.configuration == None:
+                    os.write(1, f"Please configure LIDS before starting\n".encode())
+                    continue
+                else:
+                    # If user configured LIDS, start capturing packets
+                    packet_capture.configuration = my_Config.configurations
+                    packet_capture.start_capture()
+                    continue
             
             # Stopping packet capture
             if user_input == "stop":
@@ -72,8 +83,9 @@ def main():
                 os.write(1, f"Please enter path to configuration file\n".encode())
                 configFile = os.read(0,800).decode().strip()
                 # Check if the method returns true, if so the config file was ingested successfully
-                my_Config = config()
                 ingestedSuccessfully = my_Config.ingestConfig(configFile)
+                # If the config file was ingested successfully, set the configuration to the instance of PacketCapture
+                packet_capture.configuration = my_Config.configurations
                 if ingestedSuccessfully == True:
                     os.write(1, f"Configuration file loaded successfully\n".encode())
                 continue
@@ -94,6 +106,20 @@ def main():
             # Displaying a specific alert
             if user_input == "dalert":
                 os.write(1, f"Displaying alert...\n".encode())
+                continue
+            
+            # Replay a pcap file
+            if user_input == "replay":
+                if packet_capture.configuration == None:
+                    os.write(1, f"Please configure LIDS before starting\n".encode())
+                    continue
+                os.write(1, f"Please enter path to pcap file\n".encode())
+                os.write(1, f"Example: C:\\Users\\User\\Desktop\\pcap.pcapng\n".encode())
+                
+                # Read user input
+                ReplaypcapFile = os.read(0,800).decode().strip()
+                # Replay the pcap file
+                packet_capture.replay_pcap(ReplaypcapFile)
                 continue
             
             # If user input is not a command, display invalid command message

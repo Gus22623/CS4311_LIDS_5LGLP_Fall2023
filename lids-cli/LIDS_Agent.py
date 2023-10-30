@@ -4,9 +4,11 @@ import os
 import pyshark
 import threading
 import subprocess
-from scapy.all import *
 from datetime import datetime
 import xml.etree.ElementTree as ET
+from collections import defaultdict
+import asyncio
+
 """
 NOTE: Wireshark needs to be installed in your machine to use pyshark
 NOTE: Use 'pip install pyshark' to install pyshark
@@ -57,37 +59,9 @@ class config:
             print(f"An error occurred: {str(e)}")
             return
         
-# def connectToServer():
-#     import socket
-    
-#     # Create a socket object
-#     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-#     # Define the server's IP address and port
-#     server_ip = 'your_server_ip_here'
-#     server_port = 12345  # Use the same port as the server
-
-#     try:
-#         # Connect to the server
-#         client_socket.connect((server_ip, server_port))
-#         print("Connected to the server.")
-
-#         # Send data to the server
-#         message = "LIDS connected successfully."
-#         client_socket.send(message.encode())
-
-#         # Receive data from the server
-#         data = client_socket.recv(1024)  # Adjust the buffer size as needed
-#         print(f"Received from server: {data.decode()}")
-
-#     except ConnectionRefusedError:
-#         print("Connection to the server was refused. Make sure the server is running.")
-#     except Exception as e:
-#         print(f"An error occurred: {str(e)}")
-
-#     finally:
-#         # Close the client socket
-#         client_socket.close()
+def connectToServer():
+    # TODO: Implement connection logic here
+    pass
 
 
 # Method to display saved PCAP file in Wireshark
@@ -131,12 +105,23 @@ class PacketCapture:
         self.is_capturing = False
         self._display_packets = False
         self.restart_timer = None  # Timer for thread restart
-        self.connection_attempts = {}  # Dictionary to track connection attempts
+        self.configuration = None  # Configuration dictionary passed from the configuration class
+        self.alerts = []  # List to store alerts
         
-        self.user_dict = {'user1', 'user2', 'user3'}  # Authorized users
-        self.alerts = []  # Store alerts
-        self.alert_threshold = 5  # Threshold for multiple sign-in attempts
-        self.alert_window = timedelta(minutes=5)  # Time window for multiple sign-in attempts
+        # Blacklist
+        self.blacklist = []
+        
+        # Thread to start replaying a PCAP file
+        self.replay_thread = None
+        self.is_replaying = False
+        
+        # Dictionary to store connection attempts
+        self.connection_attempts = defaultdict(int)
+        
+        # Types of alert descriptions
+        self.unknown_IP = "Unknown IP Address"
+        self.port_scan = "Port Scan"
+        self.failed_login = "Failed Login Attempt"
 
     # Method to start packet capture
     def start_capture(self):
@@ -156,12 +141,89 @@ class PacketCapture:
             self.capture_thread.join()
             print("Packet capture stopped.")
 
+    # Restart the packet capture thread every 2 minutes
+    def restart_capture_thread(self):
+        if self.is_capturing:
+            self.is_capturing = False  # Stop the current capture thread
+            self.capture_thread.join()
+            print("Restarting packet capture thread after 2 minutes.")
+            self.is_capturing = True
+            self.capture_thread = threading.Thread(target=self._capture_packets)
+            self.capture_thread.start()
+            self.restart_timer = threading.Timer(120.0, self.restart_capture_thread)
+            self.restart_timer.daemon = True
+            self.restart_timer.start()  # Start the timer
+    
+    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
+    
+    # # Start the replay thread
+    # def start_replay_thread(self):
+    #     if not self.is_replaying:
+    #         self.is_replaying = True
+    #         self.replay_thread = threading.Thread(target=self.replay_pcap)
+    #         self.replay_thread.start()
+    #         print("Replay started.")
+    #     else:
+    #         print("Replay already in progress.")   
+    
+    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
+    # # Method to stop the replay thread
+    # def stop_replay_thread(self):
+    #     if self.is_replaying:
+    #         self.is_replaying = False
+    #         self.replay_thread.join()
+    #         print("Replay stopped.")
+    #     else:
+    #         print("No replay in progress.")
+    
+    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
+    # Replay a packet capture from a PCAP file
+    def replay_pcap(self, pcap_file_path):
+        print("Successfully came into replay_pcap method")
+        try:
+            # Read the PCAP File
+            pcap_file = pcap_file_path
+            c = pyshark.FileCapture(pcap_file)
+        
+            for packet in c:
+                if 'IP' in packet:
+                    src = packet.ip.src
+                    dst = packet.ip.dst
+                    
+                    # Check if the source and destination IP addresses are in the configuration dictionary
+                    
+                    # Check if the source or destination ip have already beed detected as unknon IP, if so then just check for port scan from the IP
+                    if src in self.blacklist:
+                        self.detect_port_scan(packet, self.connection_attempts)
+                        continue
+                    if src not in self.configuration:
+                        self.blacklist.append(src)
+                        self.create_alert(packet, self.unknown_IP) 
+                    if dst in self.blacklist:
+                        self.detect_port_scan(packet, self.connection_attempts)
+                        continue
+                    if dst not in self.configuration:
+                        self.blacklist.append(dst)
+                        self.create_alert(packet, self.unknown_IP)
+                        
+                    # Check for potential port scan
+                    self.detect_port_scan(packet, self.connection_attempts)
+            
+            print("Replay complete.")
+        except FileNotFoundError:
+            print("Error: File not found.")
+            return
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+            return
+        
+    # Method to capture packets
     def _capture_packets(self):
         for packet in self.capture.sniff_continuously(packet_count=0):
             if not self.is_capturing:
                 break   
 
-            #------------------------------------------------------------------------------------#
+            #-----------------------------------For Debugging-------------------------------------------------#
             # Packet information
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             
@@ -208,46 +270,72 @@ class PacketCapture:
             # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
             #------------------------------------------------------------------------------------#
             
-            # # TODO: Implement packet analysis logic here
-            # if 'IP' in packet:
-            #     src = packet.ip.src
-            #     dst = packet.ip.dst
+            # TODO: Implement packet analysis logic here
 
-            #     if src not in self.user_dict:
-            #         self.detect_alert(packet, f"Unauthorized user detected: {src}")
+            if 'IP' in packet:
+                src = packet.ip.src
+                dst = packet.ip.dst
                 
-            #     if 'TCP' in packet:
-            #         protocol = 'TCP'
-            #         packet_length = int(packet.length)
-            #         flags = packet.tcp.flags
+                # Check if the source and destination IP addresses are in the configuration dictionary
+                if src not in self.configuration:
+                    self.create_alert(packet, self.unknown_IP)
+                    
+                if dst not in self.configuration:
+                    self.create_alert(packet, self.unknown_IP)
+                
+                # Check for potential port scan
+                self.detect_port_scan(packet, self.connection_attempts)
+                
+                # if 'TCP' in packet:
+                #     protocol = 'TCP'
+                #     packet_length = int(packet.length)
+                #     flags = packet.tcp.flags
 
-            #         if 'SYN' in flags:
-            #             description = 'TCP Handshake SYN'
-            #             if self.is_port_scan(packet, src):
-            #                 self.detect_alert(packet, f"Port scan detected from {src}")
-            #         else:
-            #             description = 'Other TCP Packet'
+                #     if 'SYN' in flags:
+                #         description = 'TCP Handshake SYN'
+                #         if self.is_port_scan(packet, src):
+                #             self.detect_alert(packet, f"Port scan detected from {src}")
+                #     else:
+                #         description = 'Other TCP Packet'
+                
+    # Method to detect port scan
+    def detect_port_scan(self, packet, connection_attempts, threshold=50):
+        source_ip = packet.ip.src
+        
+        connection_attempts[source_ip] += 1
 
+        if connection_attempts[source_ip] >= threshold:
+            self.create_alert(packet, self.port_scan)
             
-    #------------------------------------------------------------------------------------#
-    
-    # Method to detect alerts
-    def detect_alert(self, packet):
-        # TODO: Implement alert detection logic here
+    def failed_login_attempt(self, packet):
+        # TODO: Implement failed login attempt logic here
         pass
-    #------------------------------------------------------------------------------------#
-    
-    # Restart the packet capture thread every 2 minutes
-    def restart_capture_thread(self):
-        if self.is_capturing:
-            self.is_capturing = False  # Stop the current capture thread
-            self.capture_thread.join()
-            print("Restarting packet capture thread after 2 minutes.")
-            self.is_capturing = True
-            self.capture_thread = threading.Thread(target=self._capture_packets)
-            self.capture_thread.start()
-            self.restart_timer = threading.Timer(120.0, self.restart_capture_thread)
-            self.restart_timer.daemon = True
-            self.restart_timer.start()  # Start the timer
+        
+    # Method to create the alert and display it to the user
+    def create_alert(self, packet, description):
+        # Create an alert object to store alerts and its attributes
+        alerts = Alert()
+        alerts.source = packet.ip.src
+        alerts.destination = packet.ip.dst
+        alerts.protocol = packet.transport_layer
+        alerts.length = packet.length
+        alerts.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        alerts.description = description
+        
+        # Store the alert in the list
+        self.alerts.append(alerts)
+        # Display the alert to the user
+        print(f"Time: {alerts.time}, Source: {alerts.source}, Destination: {alerts.destination}, Protocol: {alerts.protocol}, Length: {alerts.length}, Description: {alerts.description}")
+
+# Class to store alerts and its attributes
+class Alert:
+    def __init__(self):
+        self.source = None
+        self.destination = None
+        self.protocol = None
+        self.length = None
+        self.description = None
+        self.time = None
+
 
             
