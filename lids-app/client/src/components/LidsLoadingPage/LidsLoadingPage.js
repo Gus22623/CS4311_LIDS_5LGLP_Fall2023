@@ -1,3 +1,8 @@
+/**
+ * @author X
+ * @version 1.0, 05/05/23
+*/
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import logo from './loading_gif.gif';
