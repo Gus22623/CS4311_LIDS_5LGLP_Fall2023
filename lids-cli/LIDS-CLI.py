@@ -1,3 +1,8 @@
+###########################################################
+# @author
+# @version
+###########################################################
+
 import os, sys, re
 import socket
 from socket import socket, AF_INET, SOCK_STREAM

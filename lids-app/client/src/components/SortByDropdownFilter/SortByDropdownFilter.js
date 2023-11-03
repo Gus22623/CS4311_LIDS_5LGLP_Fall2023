@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import Axios from "axios";
 
-function SortByDropdown({ onSort }) {
+function SortByDropdownFilter({ onSort }) {
   const [selectedOption, setSelectedOption] = useState('None');
   const [alertListLevel, setAlertListLevel  ] = useState([]);
 
@@ -16,16 +16,16 @@ function SortByDropdown({ onSort }) {
   };
 
   return (
-    <div className="sort-by-dropdown">
-      <label>Sort by: </label>
+    <div className="sort-by-dropdown-filter">
+      <label>Filter by Level: </label>
       <select value={selectedOption} onChange={handleChange}>
-        <option value="Level">Level</option>
-        <option value="Time">Time</option>
-        <option value="IP">IP</option>
         <option value="None">None</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
       </select>
     </div>
   );
 }
 
-export default SortByDropdown;
+export default SortByDropdownFilter;

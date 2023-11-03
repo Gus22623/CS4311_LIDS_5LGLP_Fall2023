@@ -8,30 +8,35 @@ The steps to run LIDS and LIDS-D will have the same instructions, but lids will 
 ### `flask`
 ### `flask_cors`
 ### `axios`
+### `pipenv`
 
 In the project directory, you can run doing these two steps:
 
-# How To Run Lids CLI
+# How To Run Lids App
 ### `open lids-app folder`
 
-Then activate the server:
-### `open server`
-### `python run main.py`
+Then activate the backend:
+### `open server folder`
+### `pipenv install`
+### `pipenv shell`
+### `pipenv run python main.py`
 
 Open a seperate terminal and activate the front end client:
-### `open client`
+### `open client folder`
 ### `npm install`
 ### `npm start`
 
 # How To Run LIDS D
 ### `open lids-d-app folder`
 
-Then activate the server:
-### `open server`
-### `python run main.py`
+Then activate the backend:
+### `open server folder`
+### `pipenv install`
+### `pipenv shell`
+### `pipenv run python main.py`
 
 Open a seperate terminal and activate the front end client:
-### `open client`
+### `open client folder`
 ### `npm install`
 ### `npm start`
 
@@ -42,5 +47,5 @@ The page will reload when you make changes.
 
 # How To Run Lids CLI
 In the project directory, you can run:
-### `python main.py`
+### `python3 LIDS-CLI.py`
 
