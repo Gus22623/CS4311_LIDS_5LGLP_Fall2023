@@ -15,6 +15,7 @@ function LidsInitialUI({ onUpload }) {
     navigate('/loading');
   }
 
+  // Handles File Injection
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -27,6 +28,7 @@ function LidsInitialUI({ onUpload }) {
   }
 
   return (
+    // Root Page
     <div className="lids-initial-ui">
         <div className="top-section-large">
           <h1 className="h1-custom">- - - - - - - - - - - - -</h1>
