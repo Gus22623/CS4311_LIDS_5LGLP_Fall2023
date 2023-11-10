@@ -23,14 +23,13 @@ function LidsInitialUI({ onUpload }) {
 
   return (
     <div className="lids-initial-ui">
-        <div className="top-section">
+        <div className="top-section-large">
           <h1 className="h1-custom">- - - - - - - - - - - - -</h1>
-          <h1 className="h1-custom">Welcome to</h1>
-          <h1 className="h1-custom">LIDS</h1>
+          <h1 className="h1-custom">Welcome to LIDS</h1>
           <h1 className="h1-custom">- - - - - - - - - - - - -</h1>
         </div>
         <div className="bottom-section">
-          <button style={{backgroundColor: "LightGray", padding: "10px 20px"}} onClick={handleUpload}>Load Config File</button>
+          <button style={{backgroundColor: "LightGray", padding: "10px 20px", marginTop: "50px", height: "50px", width: "300px"}} onClick={handleUpload}>Load Config File</button>
           <input
             type="file"
             ref={fileInputRef}

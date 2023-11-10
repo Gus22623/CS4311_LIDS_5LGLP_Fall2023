@@ -1,0 +1,31 @@
+.center-align {
+  text-align: center;
+}
+
+
+.button-container {
+  margin: 0 auto;
+  width: 400px;
+  display: block;
+  align-items: center;
+}
+.button-custom{
+    background-color: lightgray;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  padding: 20px;
+  cursor: pointer;
+  margin-left: 20px;
+  margin-top: 25px;
+  width: 200px;
+}
+.top-section {
+  background-color: #11253D;
+  height: 150px;
+}
+
+.bottom-section {
+  background-color: #434C56;
+  height: 700px;
+}

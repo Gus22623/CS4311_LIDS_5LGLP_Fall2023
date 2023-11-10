@@ -8,8 +8,36 @@ LIDS aims to monitor and secure network traffic by identifying and reporting mal
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-In the project directory, you can run:
+The steps to run LIDS and LIDS-D will have the same instructions, but lids will be replaced with lids-d
+
+# Needed Installs for Running Program
+### `flask`
+### `flask_cors`
+### `axios`
+
+In the project directory, you can run doing these two steps:
+
+# How To Run Lids CLI
 ### `open lids-app folder`
+
+Then activate the server:
+### `open server`
+### `python run main.py`
+
+Open a seperate terminal and activate the front end client:
+### `open client`
+### `npm install`
+### `npm start`
+
+# How To Run LIDS D
+### `open lids-d-app folder`
+
+Then activate the server:
+### `open server`
+### `python run main.py`
+
+Open a seperate terminal and activate the front end client:
+### `open client`
 ### `npm install`
 ### `npm start`
 
