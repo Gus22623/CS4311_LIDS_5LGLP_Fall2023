@@ -270,10 +270,7 @@ class PacketCapture:
                     'Description': description
                 }
 
-                # Pass the packet information to detect_alert method
-                self.detect_alert(packet_info)
-
-                #print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
+                print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
             #------------------------------------------------------------------------------------#
             
             # TODO: Implement packet analysis logic here
@@ -321,19 +318,46 @@ class PacketCapture:
         
     # Method to create the alert and display it to the user
     def create_alert(self, packet, description):
-        # Create an alert object to store alerts and its attributes
-        alerts = Alert()
-        alerts.source = packet.ip.src
-        alerts.destination = packet.ip.dst
-        alerts.protocol = packet.transport_layer
-        alerts.length = packet.length
-        alerts.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-        alerts.description = description
-        
-        # Store the alert in the list
-        self.alerts.append(alerts)
-        # Display the alert to the user
-        print(f"Time: {alerts.time}, Source: {alerts.source}, Destination: {alerts.destination}, Protocol: {alerts.protocol}, Length: {alerts.length}, Description: {alerts.description}")
+        try:
+            # Create an Alert object
+            alert = Alert()
+            alert.source = packet.ip.src
+            alert.destination = packet.ip.dst
+            alert.protocol = packet.transport_layer
+            alert.length = packet.length
+            alert.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            alert.description = description
+
+            # Set the alert level based on the description
+            if description == self.unknown_IP:
+                alert_level = 3
+            elif description == self.port_scan:
+                alert_level = 2
+            elif description == self.failed_login:
+                alert_level = 1
+            else:
+                alert_level = 0  # Set a default level if description doesn't match expected values
+
+            # Execute SQL query to insert the alert data into the 'alert' table
+            sql_insert_alert = (
+                "INSERT INTO alert (level, time, source_ip, dest_ip, protocol, port, description) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            )
+
+            cursor.execute(sql_insert_alert, (
+                alert_level,
+                alert.time,
+                alert.source,
+                alert.destination,
+                alert.protocol,
+                alert.length,
+                alert.description
+            ))
+
+            db.commit()
+            #print("Alert stored in the database.")
+        except Exception as e:
+            print(f"Error storing alert in the database: {str(e)}")
 
 # Class to store alerts and its attributes
 class Alert:

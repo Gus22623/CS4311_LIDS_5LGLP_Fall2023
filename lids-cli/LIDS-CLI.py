@@ -6,6 +6,7 @@ from LIDS_Agent import PacketCapture
 from LIDS_Agent import open_pcap_file
 from LIDS_Agent import config
 from LIDS_Agent import Alerts
+from db import cursor, db
 
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
@@ -62,7 +63,7 @@ def main():
             # Starting packet capture
             if user_input == "start":
                 os.write(1, f"Starting LIDS...\n".encode())
-                if packet_capture.configuration == None:
+                if not configurations_exist_in_database():
                     os.write(1, f"Please configure LIDS before starting\n".encode())
                     continue
                 else:
@@ -144,7 +145,15 @@ def main():
             
         except OSError:
             os.write(1, f"Error\n".encode())
-            
+
+def configurations_exist_in_database():
+        cursor.execute("SELECT COUNT(*) FROM config")
+        # Fetch the result
+        result = cursor.fetchone()
+
+        # If there is at least one row, configurations exist in the database
+        return result[0] > 0
+             
 # Main function call      
 if __name__ == "__main__":
     main()
