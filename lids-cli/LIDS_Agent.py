@@ -1,6 +1,6 @@
 ###########################################################
-# @author
-# @version
+# @author Ricardo Sida and Gustavo Ramirez
+# @version 0.1
 ###########################################################
 
 # LIDS_Agent back end code.

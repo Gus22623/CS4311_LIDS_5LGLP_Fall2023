@@ -1,6 +1,6 @@
 ###########################################################
-# @author
-# @version
+# @author Ricardo Sida and Gustavo Ramirez
+# @version 0.1
 ###########################################################
 
 # LIDS-CLI.py: A command line interface for the LIDS program
