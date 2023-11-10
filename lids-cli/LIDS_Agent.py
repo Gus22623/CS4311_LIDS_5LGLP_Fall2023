@@ -1,5 +1,6 @@
 # LIDS_Agent back end code.
 
+from http.client import HTTPResponse
 import os
 import pyshark
 import threading
@@ -308,8 +309,10 @@ class PacketCapture:
             self.create_alert(packet, self.port_scan)
             
     def failed_login_attempt(self, packet):
-        # TODO: Implement failed login attempt logic here
-        pass
+        if packet.haslayer(HTTPResponse):
+            http_layer = packet.getlayer(HTTPResponse)
+            if http_layer.Status_Code == 401:
+                self.create_alert(packet, self.failed_login)
         
     # Method to create the alert and display it to the user
     def create_alert(self, packet, description):
