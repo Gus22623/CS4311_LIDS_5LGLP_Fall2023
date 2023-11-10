@@ -1,3 +1,8 @@
+/**
+ * @author X
+ * @version 1.0, 05/05/23
+*/
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import MenuOptions from '../MenuOptions/MenuOptions';

@@ -1,3 +1,8 @@
+/**
+ * @author X
+ * @version 1.0, 05/05/23
+*/
+
 import React, { useEffect, useState } from 'react';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
 import LidsApp from '../../containers/LidsDApp';

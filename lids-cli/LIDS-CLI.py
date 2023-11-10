@@ -1,12 +1,21 @@
-# LIDS-CLI.py: A command line interface for the LIDS program
+###########################################################
+# @author
+# @version
+###########################################################
 
-import os, sys
-from datetime import datetime
-from LIDS_Agent import PacketCapture
-from LIDS_Agent import open_pcap_file
-from LIDS_Agent import config
-from LIDS_Agent import Alerts
-from db import cursor, db
+import os, sys, re
+import socket
+from socket import socket, AF_INET, SOCK_STREAM
+from LIDS_Agent import test
+from LIDS_Agent import ingestConfig
+
+
+# ANSI escape code for text color
+# Use these as a reference in case you want to use colored text in your code
+red_text = "\033[31mRed Text\033[0m"  # Red text, followed by a reset code to return to the default color
+green_text = "\033[32mGreen Text\033[0m"  # Green text, followed by a reset code
+yellow_text = "\033[33mYellow Text\033[0m"  # Yellow text, followed by a reset code
+sys.ps1 = "~ " 
 
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",

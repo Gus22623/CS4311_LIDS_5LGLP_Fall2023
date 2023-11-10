@@ -1,3 +1,8 @@
+/**
+ * @author X
+ * @version 1.0, 05/05/23
+*/
+
 import React, { useRef } from 'react';
 import './LidsInitialUI.css'; 
 import { useNavigate } from 'react-router-dom';
