@@ -7,6 +7,8 @@ import threading
 import subprocess
 from datetime import datetime
 import xml.etree.ElementTree as ET
+from db import cursor, db
+from prettytable import PrettyTable
 from collections import defaultdict
 import asyncio
 
@@ -20,34 +22,25 @@ class config:
 
     def ingestConfig(self, configFile):
         try:
-            # Load the XML configuration file
-            tree = ET.parse(configFile)
-            root = tree.getroot()
-
-            # Process the XML data
-            for system in root.findall('./system'):
+            # Parse the XML data
+            root = ET.fromstring(configFile)
+            for system in root.findall('system'):
                 name = system.find('name').text
                 ip = system.find('ip').text
                 mac = system.find('mac').text
-                ports = [int(port) for port in system.find('ports').text.split(',')]
-                whitelist = system.find('whitelist').text.split(',')
-                
-                # Add the configuration to the dictionary
-                self.configurations[name] = {
-                    'Name': name,
-                    'IP Address': ip,
-                    'MAC Address': mac,
-                    'Ports': ports,
-                    'Whitelist': whitelist
-                }
-                
-                # Display the configuration
-                print(f"Agent Name: {self.configurations[name]['Name']}")
-                print(f"IP Address: {self.configurations[name]['IP Address']}")
-                print(f"MAC Address: {self.configurations[name]['MAC Address']}")
-                print(f"Ports: {self.configurations[name]['Ports']}")
-                print(f"Whitelist: {self.configurations[name]['Whitelist']}\n")
+                ports = system.find('ports').text
+                whitelist = system.find('whitelist').text
 
+                # Check if MAC address already exists in the database
+                sql_check_mac = f"SELECT * FROM config WHERE mac = '{mac}'"
+                cursor.execute(sql_check_mac)
+                result = cursor.fetchone()
+
+                if not result:
+                    # Insert data into MySQL database
+                    sql_insert = f"INSERT INTO config (name, ip, mac, ports, whitelist) VALUES ('{name}', '{ip}', '{mac}', '{ports}', '{whitelist}')"
+                    cursor.execute(sql_insert)
+                    db.commit()
             return True
 
         except ET.ParseError:
@@ -227,48 +220,60 @@ class PacketCapture:
             #-----------------------------------For Debugging-------------------------------------------------#
             # Packet information
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-            
-            # if 'IP' in packet:
-            #     src = packet.ip.src
-            #     dst = packet.ip.dst
+            if 'IP' in packet:
+                src = packet.ip.src
+                dst = packet.ip.dst
 
-            #     if 'TCP' in packet:
-            #         protocol = 'TCP'
-            #         packet_length = int(packet.length)
-            #         flags = packet.tcp.flags
+                if 'TCP' in packet:
+                    protocol = 'TCP'
+                    packet_length = int(packet.length)
+                    flags = packet.tcp.flags
 
-            #         if 'SYN' in flags:
-            #             description = 'TCP Handshake SYN'
-            #         else:
-            #             description = 'Other TCP Packet'
-            #     elif 'UDP' in packet:
-            #         protocol = 'UDP'
-            #         packet_length = int(packet.length)
-            #         description = 'UDP Packet'
-            #     elif 'ICMP' in packet:
-            #         protocol = 'ICMP'
-            #         packet_length = int(packet.length)
-            #         description = 'ICMP Packet'
-            #     elif 'ARP' in packet:
-            #         protocol = 'ARP'
-            #         packet_length = int(packet.length)
-            #         description = 'ARP Packet'
-            #     elif 'HTTP' in packet:
-            #         protocol = 'HTTP'
-            #         packet_length = int(packet.length)
-            #         description = 'HTTP Packet'
-            #     else:
-            #         protocol = 'Other'
-            #         packet_length = int(packet.length)
-            #         description = "Unknown/Other Protocol"
-            
-            """
-            NOTE:Displaying packet information for debugging purposes
-            Uncomment the following line to display packet information
-            | |
-            V V
-            """
-            # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
+                    if 'SYN' in flags:
+                        description = 'TCP Handshake SYN'
+                    else:
+                        description = 'Other TCP Packet'
+                elif 'UDP' in packet:
+                    protocol = 'UDP'
+                    packet_length = int(packet.length)
+                    description = 'UDP Packet'
+                elif 'ICMP' in packet:
+                    protocol = 'ICMP'
+                    packet_length = int(packet.length)
+                    description = 'ICMP Packet'
+                elif 'ARP' in packet:
+                    protocol = 'ARP'
+                    packet_length = int(packet.length)
+                    description = 'ARP Packet'
+                elif 'HTTP' in packet:
+                    protocol = 'HTTP'
+                    packet_length = int(packet.length)
+                    description = 'HTTP Packet'
+                else:
+                    protocol = 'Other'
+                    packet_length = int(packet.length)
+                    description = "Unknown/Other Protocol"
+                
+                """
+                NOTE:Displaying packet information for debugging purposes
+                Uncomment the following line to display packet information
+                | |
+                V V
+                """
+                # Create a dictionary to represent the packet
+                packet_info = {
+                    'Time': time,
+                    'Source': src,
+                    'Destination': dst,
+                    'Protocol': protocol,
+                    'Length': packet_length,
+                    'Description': description
+                }
+
+                # Pass the packet information to detect_alert method
+                self.detect_alert(packet_info)
+
+                #print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
             #------------------------------------------------------------------------------------#
             
             # TODO: Implement packet analysis logic here
@@ -341,4 +346,35 @@ class Alert:
         self.time = None
 
 
-            
+class Alerts:
+    def __init__(self):
+        self.cursor = cursor
+
+    def getAlerts(self):
+        try:
+            # Fetch data from the 'alerts' table
+            self.cursor.execute("SELECT level, time, source_ip, port, description FROM alert")
+            alerts = self.cursor.fetchall()
+
+            # Convert data to a list of dictionaries for JSON response
+            alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'port': alert[3], 'desc': alert[4]} for alert in alerts]
+
+            return alerts_data
+        except Exception as e:
+            return str(e)
+
+    def displayAlerts(self):
+        alerts = self.getAlerts()
+
+        if isinstance(alerts, list):
+            # Create a pretty table
+            table = PrettyTable()
+            table.field_names = ["Level", "Time", "Source IP", "Port", "Description"]
+
+            for alert in alerts:
+                table.add_row([alert['level'], alert['time'], alert['source_ip'], alert['port'], alert['desc']])
+
+            return str(table)
+        else:
+            return f"Error: {alerts}"
+
