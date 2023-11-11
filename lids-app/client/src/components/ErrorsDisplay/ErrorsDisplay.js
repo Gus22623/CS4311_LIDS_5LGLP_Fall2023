@@ -7,6 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ErrorsDisplay.css';
 
+// Index Table Displaying Errors
 const ErrorsDisplay = ({ errors }) => {
   return (
     <div className="errors-display-container">
