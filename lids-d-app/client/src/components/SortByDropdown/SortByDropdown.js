@@ -17,6 +17,7 @@ function SortByDropdown({ onSort }) {
   };
 
   return (
+    // Sorting Alerts by specific category
     <div className="sort-by-dropdown">
       <center-label>Sort Alerts By</center-label>
       <select value={selectedOption} onChange={handleChange}>
