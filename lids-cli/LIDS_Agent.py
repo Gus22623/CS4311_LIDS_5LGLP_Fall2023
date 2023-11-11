@@ -7,7 +7,6 @@ import subprocess
 from datetime import datetime
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-import asyncio
 
 """
 NOTE: Wireshark needs to be installed in your machine to use pyshark
@@ -195,13 +194,14 @@ class PacketCapture:
                     # Check if the source or destination ip have already beed detected as unknon IP, if so then just check for port scan from the IP
                     if src in self.blacklist:
                         self.detect_port_scan(packet, self.connection_attempts)
-                        continue
+
                     if src not in self.configuration:
                         self.blacklist.append(src)
-                        self.create_alert(packet, self.unknown_IP) 
+                        self.create_alert(packet, self.unknown_IP)
+                        
                     if dst in self.blacklist:
                         self.detect_port_scan(packet, self.connection_attempts)
-                        continue
+                        
                     if dst not in self.configuration:
                         self.blacklist.append(dst)
                         self.create_alert(packet, self.unknown_IP)
@@ -285,18 +285,6 @@ class PacketCapture:
                 
                 # Check for potential port scan
                 self.detect_port_scan(packet, self.connection_attempts)
-                
-                # if 'TCP' in packet:
-                #     protocol = 'TCP'
-                #     packet_length = int(packet.length)
-                #     flags = packet.tcp.flags
-
-                #     if 'SYN' in flags:
-                #         description = 'TCP Handshake SYN'
-                #         if self.is_port_scan(packet, src):
-                #             self.detect_alert(packet, f"Port scan detected from {src}")
-                #     else:
-                #         description = 'Other TCP Packet'
                 
     # Method to detect port scan
     def detect_port_scan(self, packet, connection_attempts, threshold=50):
