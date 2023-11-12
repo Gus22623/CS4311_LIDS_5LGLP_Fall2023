@@ -3,6 +3,13 @@
 # @version 0.1
 ###########################################################
 
+###########################################################
+# Modification
+# @author Alejandro Jaramillo & Ruth Avila
+# @version 0.2
+# @description: Add Alert Encryption functionality.
+###########################################################
+
 # LIDS_Agent back end code.
 
 from http.client import HTTPResponse
@@ -15,6 +22,7 @@ import xml.etree.ElementTree as ET
 from db import cursor, db
 from prettytable import PrettyTable
 from collections import defaultdict
+from cryptography.fernet import Fernet
 import asyncio
 
 """
@@ -324,6 +332,11 @@ class PacketCapture:
     # Method to create the alert and display it to the user
     def create_alert(self, packet, description):
         try:
+            # Generate a key
+            key = Fernet.generate_key()
+            # Create a Fernet object
+            cipher_suite = Fernet(key)
+
             # Create an Alert object
             alert = Alert()
             alert.source = packet.ip.src
@@ -343,6 +356,20 @@ class PacketCapture:
             else:
                 alert_level = 0  # Set a default level if description doesn't match expected values
 
+            # Data to be encrypted
+            data_to_encrypt = {
+              "level": f"{alert_level}",
+              "time": f"{alert.time}",
+              "source_ip": f"{alert.source}",
+              "dest_ip": f"{alert.destination}",
+              "protocol": f"{alert.protocol}",
+              "port": f"{alert.time}",
+              "description": f"{alert.description}"
+            }
+
+            # Encrypt Data
+            encrypted_data = {key: cipher_suite.encrypt(value.encode()).decode() for key, value in data_to_encrypt.items()}
+
             # Execute SQL query to insert the alert data into the 'alert' table
             sql_insert_alert = (
                 "INSERT INTO alert (level, time, source_ip, dest_ip, protocol, port, description) "
@@ -350,13 +377,13 @@ class PacketCapture:
             )
 
             cursor.execute(sql_insert_alert, (
-                alert_level,
-                alert.time,
-                alert.source,
-                alert.destination,
-                alert.protocol,
-                alert.length,
-                alert.description
+                encrypted_data["level"],
+                encrypted_data["time"],
+                encrypted_data["source_ip"],
+                encrypted_data["dest_ip"],
+                encrypted_data["protocol"],
+                encrypted_data["port"],
+                encrypted_data["description"]
             ))
 
             db.commit()
