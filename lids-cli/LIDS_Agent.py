@@ -363,7 +363,7 @@ class PacketCapture:
               "source_ip": f"{alert.source}",
               "dest_ip": f"{alert.destination}",
               "protocol": f"{alert.protocol}",
-              "port": f"{alert.time}",
+              "port": f"{alert.length}",
               "description": f"{alert.description}"
             }
 
