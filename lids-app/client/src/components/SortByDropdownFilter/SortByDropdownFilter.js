@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Axios from "axios";
+import './SortByDropdownFilter.css';
 
 function SortByDropdownFilter({ onSort }) {
   const [selectedOption, setSelectedOption] = useState('None');
