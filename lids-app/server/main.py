@@ -1,6 +1,19 @@
 from flask import Flask
 from flask_cors import CORS
 import routes
+from datetime import datetime
+from LIDS_Agent import PacketCapture
+from LIDS_Agent import open_pcap_file
+from LIDS_Agent import config
+from LIDS_Agent import Alerts
+from db import cursor, db
+import socket
+
+'''THIS WILL BE MOVED TO ROUTES for the queries (also will be used in React - Carlos)'''
+hostname=socket.gethostname()
+IPAddr=socket.gethostbyname(hostname)
+print("Your Computer Name is:"+hostname)
+print("Your Computer IP Address is:"+IPAddr)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -38,6 +51,22 @@ def filter_level_3():
     return routes.filter_level_3()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    #app.run(debug=True, port=5000)
+
+    # Create an instance of PacketCapture
+    packet_capture = PacketCapture(interface="Ethernet")
+    my_Config = config()
+
+    # Flag to track if packet capture is active
+    capturing = False 
+    
+    while(True):
+        packet_capture.configuration = my_Config.configurations
+        packet_capture.start_capture()
+
+        alerts = Alerts()
+        alerts_table = alerts.displayAlerts()
+        print(alerts_table)
+        app.run(debug=True, port=5000)
 
 
