@@ -2,10 +2,10 @@
 
 import os, sys
 from datetime import datetime
-from LIDS_Agent import PacketCapture
-from LIDS_Agent import open_pcap_file
-from LIDS_Agent import config
-from LIDS_Agent import connectToServer
+from LNIDS_Agent import PacketCapture
+from LNIDS_Agent import open_pcap_file
+from LNIDS_Agent import config
+from LNIDS_Agent import connectToServer
 
 
 # Dictionary of commands and their descriptions
@@ -25,7 +25,8 @@ def main():
     # Set the prompt to ~
     sys.ps1 = "~ " 
     # Create an instance of PacketCapture
-    packet_capture = PacketCapture(interface="any")
+    # packet_capture = PacketCapture(interface="any")
+    packet_capture = PacketCapture(interface="eth0")
     my_Config = config()
 
     # Flag to track if packet capture is active

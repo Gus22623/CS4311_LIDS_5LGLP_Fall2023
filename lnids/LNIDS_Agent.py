@@ -8,6 +8,8 @@ from datetime import datetime
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 import asyncio
+from pyshark import FileCapture
+import csv
 
 """
 NOTE: Wireshark needs to be installed in your machine to use pyshark
@@ -99,7 +101,6 @@ def open_pcap_file(pcap_file_path):
 class PacketCapture:
     def __init__(self, interface='eth0'):
         self.interface = interface
-        # self.display_filter = display_filter - NOTE: Removed this filter to capture all packets
         self.capture = pyshark.LiveCapture(interface=interface)
         self.capture_thread = None
         self.is_capturing = False
@@ -261,6 +262,34 @@ class PacketCapture:
         
         # Store the alert in the list
         self.alerts.append(alerts)
+        
+        # Specify the path on your external drive where you want to save alerts
+        # external_drive_path = "/media/kali/8874-BD0E/"
+        # alerts_file_path = os.path.join(external_drive_path, "alerts.txt")
+        
+        # TODO: Save the alerts to a pcap file in an external drive
+        # Specify the path to your CSV file
+        csv_file_path = "/media/kali/8874-BD0E/alerts.csv"
+
+        # Write the alert to the CSV file
+        with open(csv_file_path, mode='a', newline='') as csv_file:
+            fieldnames = ['Time', 'Source', 'Destination', 'Protocol', 'Length', 'Description']
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+            # Check if the CSV file is empty, write header if it is
+            if csv_file.tell() == 0:
+                writer.writeheader()
+
+            # Write the alert data to the CSV file
+            writer.writerow({
+                'Time': alerts.time,
+                'Source': alerts.source,
+                'Destination': alerts.destination,
+                'Protocol': alerts.protocol,
+                'Length': alerts.length,
+                'Description': alerts.description
+            })
+        
         # Display the alert to the user
         print(f"Time: {alerts.time}, Source: {alerts.source}, Destination: {alerts.destination}, Protocol: {alerts.protocol}, Length: {alerts.length}, Description: {alerts.description}")
 
