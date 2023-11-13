@@ -263,15 +263,10 @@ class PacketCapture:
         # Store the alert in the list
         self.alerts.append(alerts)
         
-        # Specify the path on your external drive where you want to save alerts
-        # external_drive_path = "/media/kali/8874-BD0E/"
-        # alerts_file_path = os.path.join(external_drive_path, "alerts.txt")
-        
-        # TODO: Save the alerts to a pcap file in an external drive
         # Specify the path to your CSV file
         csv_file_path = "/media/kali/8874-BD0E/alerts.csv"
 
-        # Write the alert to the CSV file
+        # Write the alert to the an external drive
         with open(csv_file_path, mode='a', newline='') as csv_file:
             fieldnames = ['Time', 'Source', 'Destination', 'Protocol', 'Length', 'Description']
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)

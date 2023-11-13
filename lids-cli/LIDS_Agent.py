@@ -153,27 +153,7 @@ class PacketCapture:
             self.restart_timer.daemon = True
             self.restart_timer.start()  # Start the timer
     
-    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
-    
-    # # Start the replay thread
-    # def start_replay_thread(self):
-    #     if not self.is_replaying:
-    #         self.is_replaying = True
-    #         self.replay_thread = threading.Thread(target=self.replay_pcap)
-    #         self.replay_thread.start()
-    #         print("Replay started.")
-    #     else:
-    #         print("Replay already in progress.")   
-    
-    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
-    # # Method to stop the replay thread
-    # def stop_replay_thread(self):
-    #     if self.is_replaying:
-    #         self.is_replaying = False
-    #         self.replay_thread.join()
-    #         print("Replay stopped.")
-    #     else:
-    #         print("No replay in progress.")
+
     
     # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
     # Replay a packet capture from a PCAP file
