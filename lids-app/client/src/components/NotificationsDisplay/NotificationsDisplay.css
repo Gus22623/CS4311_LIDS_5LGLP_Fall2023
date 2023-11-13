@@ -1,37 +1,37 @@
 .notifications-display-container {
-    padding: 20px;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-  }
-  
-  h1 {
-    margin: 0;
-  }
-  
-  .notifications-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .gray-row {
-    background-color: gray;
-    color: black;
-  }
-  
-  .button-spacing {
-    margin-top: 10px; /* Adjust the margin as needed to create space */
-  }
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+h1 {
+  margin: 0;
+}
+
+.notifications-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.gray-row {
+  background-color: gray;
+  color: black;
+}
+
+.button-spacing {
+  margin-top: 10px; /* Adjust the margin as needed to create space */
+}
   
   
