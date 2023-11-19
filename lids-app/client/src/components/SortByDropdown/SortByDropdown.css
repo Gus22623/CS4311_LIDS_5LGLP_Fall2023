@@ -1,3 +1,7 @@
 .sort-by{
-    padding: 20px;
-  }
+  padding: 20px;
+}
+
+.sort-by-container{
+  margin-bottom: 10px;
+}
