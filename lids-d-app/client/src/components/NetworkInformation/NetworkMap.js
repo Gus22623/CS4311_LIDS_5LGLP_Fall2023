@@ -1,7 +1,9 @@
 /**
- * @author Joshua Shoemaker
+ * @author Joshua Shoemaker 
+ * @created 10/20/23
  * @version 1.2
- * @modifers Brittany Madrigal 11/6 - 11/10/23, 11/18 - 11/09/23
+ * @modifers Brittany Madrigal 
+ * @modified 11/6/23, 11/7/23, 11/10/23, 11/18 - 11/19/23
 */
 
 import React, { useState, useEffect } from 'react';
@@ -114,24 +116,17 @@ function NetworkMap() {
   }, []);
 
   // Handlers for navigation of buttons
-  const handleConfigureServer = () => navigate('/config-server');
   const handleViewAlerts = () => navigate('/view-alerts');
-  const handleNetworkInfo = () => navigate('/network-map');
 
   //return for button functions
   return (
     <div>
-      <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
       <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
-      <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
       <svg width="1000" height="600">
         {devices.map((device, index) => (
           <DeviceNode key={device.id} device={device} destIp={destIpData[index]} />
         ))}
       </svg>
-      <Link to="/network-info">
-        <button>Network Info</button>
-      </Link>
     </div>
   );
 }
