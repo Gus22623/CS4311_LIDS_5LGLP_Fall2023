@@ -1,71 +1,137 @@
 /**
- * @author X
- * @version 1.0, 05/05/23
+ * @author Joshua Shoemaker 
+ * @created 10/20/23
+ * @version 1.2
+ * @modifers Brittany Madrigal 
+ * @modified 11/6/23, 11/7/23, 11/10/23, 11/18 - 11/19/23
 */
+/**
+ * @modifiers
+ */
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom'; // Added import
-//import * as d3 from 'd3';
+import React, { useState, useEffect } from 'react';
+import Axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
-function DeviceNode({ device }) {
-    const color = device.status === 'recognized' ? 'green' : 'red';
-    return (
-        
-        <circle cx={device.x} cy={device.y} r={10} fill={color} />
-    );
-}
+//Import the nessecary images for OS display
+import Windows_known from './microsoft-logo-known.png';
+import Windows_unknown from './windows-logo-unknown.png';
+import Linux_known from './linux-logo-known.png';
+import Linux_unknown from './linux-logo-unknown.png'; 
+import Mac_known from './apple-logo-known.png'; 
+import Mac_unknown from './apple-logo-unknown.png';
 
-function NetworkMap() {
-    // For simplicity, we're using static data here.
-    const [devices, setDevices] = React.useState([
-        { id: 1, name: "Device 1", status: "recognized", x: 50, y: 50 },
-        { id: 2, name: "Device 2", status: "unknown", x: 100, y: 100 },
-        { id: 3, name: "Device 3", status: "recognized", x: 150, y: 150 },
-    ]);
-/*
-function NetworkMap() {
-    const [devices, setDevices] = React.useState([]);
+//Perameters for OS image for all users. 
+//Includes known and unknown for Linux, Mac and Windows 
+const getOsImage = (osName, status) => {
+  const osStatus = status === 'recognized' ? 'known' : 'unknown';
+  switch (`${osName}_${osStatus}`) {
+    case 'Windows_known':
+      return Windows_known;
+    case 'Windows_unknown':
+      return Windows_unknown;
+    case 'Linux_known':
+      return Linux_known;
+    case 'Linux_unknown':
+      return Linux_unknown;
+    case 'Mac_known':
+      return Mac_known;
+    case 'Mac_unknown':
+      return Mac_unknown;
+    default:
+      return null;
+  }
+};
+//Perameters for the surrounding rectangle, padding and dimensions of the elements inside (text, OS image, status)
+const DeviceNode = ({ device, destIp }) => {
+  const osImage = getOsImage(device.os, device.status);
+  const rectWidth = 120;
+  const rectHeight = 150; 
+  const padding = 10;
+  const textSize = 14;
+  
+  //Return of the elements(surrounding rectangle, Host information text, status circle, OS image, IP Address text)
+  return (
+    <g>
+      <rect
+        x={device.x - rectWidth/2}
+        y={device.y - rectHeight / 2}
+        width={rectWidth}
+        height={rectHeight}
+        fill="none"
+        stroke="black"
+        strokeWidth="2"
+      />
+      <text 
+      x={device.x - padding} 
+      y={device.y + rectHeight/4 - padding} 
+      textAnchor="middle" 
+      fontSize={textSize}
+      fill={device.host.toLowerCase() === 'unknown' ? 'red' : 'black'}>
+      Host: {device.host} </text>
 
-    React.useEffect(() => {
-        fetch("/api/devices")
-            .then(response => response.json())
-            .then(data => {
-                // Assuming the API returns an array of devices
-                setDevices(data);
-            });
-    }, []);
-    */
-    const navigate = useNavigate(); // Added hook
-
-    const handleConfigureServer = () => { // Added function
-        navigate('/config-server');
-      };
-    
-      const handleViewAlerts = () => {
-        navigate('/view-alerts')
-      };
+      <circle 
+      cx={device.x + rectWidth/2-padding} 
+      cy={device.y + rectHeight/4 - padding} 
+      r={5} 
+      fill={device.status === 'recognized' ? 'green' : 'red'} />
       
-      const handleNetworkInfo = () => {
-        navigate('/network-map')
-      };
+      {osImage && (
+        <image
+          x={device.x - rectWidth / 4 - 2}
+          y={device.y - rectHeight / 2 + padding}
+          href={osImage}
+          width="65"
+          height="65"
+          textAnchor='left'
+        />
+      )}
+      <text x={device.x - rectWidth / 3} 
+      y={device.y + rectHeight / 2 - padding } 
+      textAnchor="left" 
+      fontSize={textSize}
+      fill={device.host.toLowerCase() === 'unknown' ? 'red' : 'black'}>
+      IP: {destIp}</text>
+    </g>
+  );
+};
+//Setup for hardcoded examples of users of the network
+function NetworkMap() {
+  const [devices, setDevices] = useState([
+    { id: 1, os: 'Windows', status: 'recognized', x: 150, y: 100, host: "Diana"},
+    { id: 2, os: 'Linux', status: 'unknown', x: 300, y: 150, host:"unknown"},
+    { id: 3, os: 'Mac', status: 'recognized', x: 450, y: 175, host:"Sebastian"}
+  ]);
+  const [destIpData, setDestIpData] = useState([]);
+  const navigate = useNavigate();
 
-    return (
-        <div>
-            <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
-            <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
-            <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
-            <svg width="400" height="400">
-                {devices.map(device => (
-                    <DeviceNode key={device.id} device={device} />
-                ))}
-            </svg>
+  useEffect(() => {
+    
+    // Fetch IP from database
+    Axios.get('http://127.0.0.1:5000/getAlertsIP')
+      .then((response) => {
+        const destIpData = response.data.map(item => item.dest_ip);
+        setDestIpData(destIpData);
+      })
+      .catch((error) => {
+        console.error("Error fetching dest_ip data:", error);
+      });
+  }, []);
 
-            <Link to="/network-info">
-                <button>Network Info</button>
-            </Link>
-        </div>
-    );
+  // Handlers for navigation of buttons
+  const handleViewAlerts = () => navigate('/view-alerts');
+
+  //return for button functions
+  return (
+    <div>
+      <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
+      <svg width="1000" height="600">
+        {devices.map((device, index) => (
+          <DeviceNode key={device.id} device={device} destIp={destIpData[index]} />
+        ))}
+      </svg>
+    </div>
+  );
 }
 
 export default NetworkMap;

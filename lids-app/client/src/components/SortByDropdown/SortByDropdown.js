@@ -2,9 +2,13 @@
  * @author X
  * @version 1.0, 05/05/23
 */
+/**
+ * @modifiers
+ */
 
 import React, { useState } from 'react';
 import Axios from "axios";
+import './SortByDropdown.css';
 
 function SortByDropdown({ onSort }) {
   const [selectedOption, setSelectedOption] = useState('None');
@@ -17,8 +21,8 @@ function SortByDropdown({ onSort }) {
 
   return (
     // Sorting Alerts by specific category
-    <div className="sort-by-dropdown">
-      <label>Sort by: </label>
+    <div className="sort-by-dropdown" class="sort-by-container">
+      <label class="sort-by">Sort by: </label>
       <select value={selectedOption} onChange={handleChange}>
         <option value="Level">Level</option>
         <option value="Time">Time</option>
