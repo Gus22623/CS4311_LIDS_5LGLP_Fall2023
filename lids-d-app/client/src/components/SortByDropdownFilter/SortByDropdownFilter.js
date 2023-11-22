@@ -19,6 +19,7 @@ function SortByDropdownFilter({ onSort }) {
   };
 
   return (
+    // Filter Alerts by Level
     <div className="sort-by-dropdown-filter">
       <label>Filter by Level: </label>
       <select value={selectedOption} onChange={handleChange}>

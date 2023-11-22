@@ -8,6 +8,7 @@
 
 import React, { useState } from 'react';
 import Axios from "axios";
+import './SortByDropdownFilter.css';
 
 function SortByDropdownFilter({ onSort }) {
   const [selectedOption, setSelectedOption] = useState('None');
@@ -19,6 +20,7 @@ function SortByDropdownFilter({ onSort }) {
   };
 
   return (
+    // Filter Alerts by Level
     <div className="sort-by-dropdown-filter">
       <label>Filter by Level: </label>
       <select value={selectedOption} onChange={handleChange}>

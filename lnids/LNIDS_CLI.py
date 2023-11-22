@@ -1,17 +1,12 @@
-###########################################################
-# @author Ricardo Sida and Gustavo Ramirez
-# @version 0.1
-###########################################################
-
 # LIDS-CLI.py: A command line interface for the LIDS program
 
 import os, sys
 from datetime import datetime
-from LIDS_Agent import PacketCapture
-from LIDS_Agent import open_pcap_file
-from LIDS_Agent import config
-from LIDS_Agent import Alerts
-from db import cursor, db
+from LNIDS_Agent import PacketCapture
+from LNIDS_Agent import open_pcap_file
+from LNIDS_Agent import config
+from LNIDS_Agent import connectToServer
+
 
 # Dictionary of commands and their descriptions
 commands_help = {"start": "Start the LIDS Program",
@@ -30,7 +25,8 @@ def main():
     # Set the prompt to ~
     sys.ps1 = "~ " 
     # Create an instance of PacketCapture
-    packet_capture = PacketCapture(interface="Wi-Fi")
+    # packet_capture = PacketCapture(interface="any")
+    packet_capture = PacketCapture(interface="eth0")
     my_Config = config()
 
     # Flag to track if packet capture is active
@@ -68,7 +64,7 @@ def main():
             # Starting packet capture
             if user_input == "start":
                 os.write(1, f"Starting LIDS...\n".encode())
-                if not configurations_exist_in_database():
+                if packet_capture.configuration == None:
                     os.write(1, f"Please configure LIDS before starting\n".encode())
                     continue
                 else:
@@ -86,21 +82,13 @@ def main():
             # Configuring LIDS
             if user_input == "config":
                 os.write(1, f"Please enter path to configuration file\n".encode())
-                configFilePath = os.read(0,800).decode().strip()
-
-                try:
-                    with open(configFilePath, 'r') as configFile:
-                        configData = configFile.read()
-
-                    # Check if the method returns true, if so the config file was ingested successfully
-                    my_Config = config()
-                    ingestedSuccessfully = my_Config.ingestConfig(configData)
-
-                    if ingestedSuccessfully == True:
-                        os.write(1, f"Configuration file loaded successfully\n".encode())
-
-                except FileNotFoundError:
-                    os.write(1, f"Error: File not found.\n".encode())
+                configFile = os.read(0,800).decode().strip()
+                # Check if the method returns true, if so the config file was ingested successfully
+                ingestedSuccessfully = my_Config.ingestConfig(configFile)
+                # If the config file was ingested successfully, set the configuration to the instance of PacketCapture
+                packet_capture.configuration = my_Config.configurations
+                if ingestedSuccessfully == True:
+                    os.write(1, f"Configuration file loaded successfully\n".encode())
                 continue
             
             # Displaying packet capture
@@ -111,36 +99,14 @@ def main():
                 open_pcap_file(pcapFile)
                 continue
             
-           # Assuming your existing code...
-
+            # Displaying all alerts
             if user_input == "dalerts":
                 os.write(1, f"Displaying alerts...\n".encode())
-
-                alerts = Alerts()
-                alerts_table = alerts.displayAlerts()
-
-                os.write(1, f"{alerts_table}\n".encode())
-
                 continue
-
             
             # Displaying a specific alert
             if user_input == "dalert":
                 os.write(1, f"Displaying alert...\n".encode())
-                continue
-            
-            # Replay a pcap file
-            if user_input == "replay":
-                if packet_capture.configuration == None:
-                    os.write(1, f"Please configure LIDS before starting\n".encode())
-                    continue
-                os.write(1, f"Please enter path to pcap file\n".encode())
-                os.write(1, f"Example: C:\\Users\\User\\Desktop\\pcap.pcapng\n".encode())
-                
-                # Read user input
-                ReplaypcapFile = os.read(0,800).decode().strip()
-                # Replay the pcap file
-                packet_capture.replay_pcap(ReplaypcapFile)
                 continue
             
             # If user input is not a command, display invalid command message
@@ -150,15 +116,7 @@ def main():
             
         except OSError:
             os.write(1, f"Error\n".encode())
-
-def configurations_exist_in_database():
-        cursor.execute("SELECT COUNT(*) FROM config")
-        # Fetch the result
-        result = cursor.fetchone()
-
-        # If there is at least one row, configurations exist in the database
-        return result[0] > 0
-             
+            
 # Main function call      
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 /**
- * @author X
- * @version 1.0, 05/05/23
+ * @author Alejandro Jaramillo
+ * @version 1.0, 9/15/23
 */
 /**
  * @modifiers
@@ -8,6 +8,7 @@
 
 import React, { useEffect } from 'react';
 
+// Export Formats (Bare UI Only)
 function Export({ onUpload }){
   return(
     <div style="text-align: center;">

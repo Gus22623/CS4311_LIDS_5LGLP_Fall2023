@@ -12,6 +12,7 @@ import './NotificationsDisplay.css';
 
 const NotificationsDisplay = ({ notifications }) => {
   return (
+    // Index Table for all Notifications
     <div className="notifications-display-container">
       <div className="header">
         <h1>NOTIFICATIONS</h1>

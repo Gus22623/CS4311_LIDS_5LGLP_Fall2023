@@ -59,6 +59,7 @@ function LidsDashboard() {
 
   const navigate = useNavigate(); // Added hook
 
+  // Sort Alerts by certain criteria
   const handleSort = (criteria) => {
     if (criteria === 'Level') {
       //const sortedAlerts = [...alerts].sort((a, b) => a.level - b.level);
@@ -97,6 +98,7 @@ function LidsDashboard() {
   };
 }
 
+// Filter out alerts by certain criteria
 const handleFilter = (criteria) => {
   if (criteria === '1') {
     Axios.get('http://127.0.0.1:5000/filterLevel_1')
@@ -153,6 +155,7 @@ const handleFilter = (criteria) => {
         <div className="connection-status">{connectionStatus}</div>
       </div>
       <div className="bottom-section">
+        {/* Index Table with Filtered Alerts */}
         <SortByDropdownFilter onSort={handleFilter} />
         {filterCriteria === "1" ? (
             <div className="filter-section">
@@ -244,6 +247,7 @@ const handleFilter = (criteria) => {
 
         {/*END OF FILTER */}
 
+      {/* Index Table with Sorted Alerts */}
       <SortByDropdown onSort={handleSort} />
 
         {criteria === "Level" ? (

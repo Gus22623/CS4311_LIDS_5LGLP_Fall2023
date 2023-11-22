@@ -1,11 +1,3 @@
-/**
- * @author X
- * @version 1.0, 05/05/23
-*/
-/**
- * @modifiers
- */
-
 import React, { useEffect } from 'react';
 
 function Export({ onUpload }){

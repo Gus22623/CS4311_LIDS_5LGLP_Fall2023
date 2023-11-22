@@ -10,6 +10,7 @@ import React from 'react';
 import './AlertDisplay.css';
 import '../../containers/LidsApp';
 
+// Index Table with Alert Data
 const AlertDisplay = () => {
   return (
     <div className="alert-display-container">

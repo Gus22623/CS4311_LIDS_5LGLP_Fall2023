@@ -4,7 +4,7 @@ db = pymysql.connect(
     host='localhost',
     user='root',
 
-    database='lids-database',
+    database='lids-db',
     port=3306
 )
 cursor = db.cursor()

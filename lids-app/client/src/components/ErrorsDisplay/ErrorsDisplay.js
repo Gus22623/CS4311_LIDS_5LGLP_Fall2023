@@ -10,11 +10,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ErrorsDisplay.css';
 
+// Index Table Displaying Errors
 const ErrorsDisplay = ({ errors }) => {
   return (
     <div className="errors-display-container">
       <div className="header">
-        <h1>ERRORS</h1>
+        <h1 className="error">ERRORS</h1>
       </div>
       <div className="table-container">
         <table className="errors-table">
