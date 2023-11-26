@@ -1,3 +1,8 @@
+/**
+ * @author Carlos Alcazar and Denisse Fernandez
+ * @version 5.0, 11/26/23
+*/
+
 .lids-dashboard {
   text-align: space-between;
   background-color: #434C56;
@@ -85,4 +90,32 @@
 .level-3 {
   background-color: rgba(255, 0, 0, 0.5);
   color: rgb(100, 0, 0);
+}
+
+.alert-table-container{
+  border-radius: 20px;
+  height: 700px;
+  padding: 0 10px 10px 10px;
+  overflow: scroll;
+}
+
+Table thead{
+  background-color: gray;
+  position: sticky;
+  top: 0px;
+  margin: 0 0 0 0;
+  border-color: white;
+  border-radius: 1px;
+}
+
+.alert-table tbody tr:hover {
+  background-color: lightgray;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.filter-table tbody tr:hover {
+  background-color: lightgray;
+  cursor: pointer;
+  opacity: 0.9;
 }
