@@ -1,3 +1,8 @@
+#
+# @author Ricardo Sida, Carlos Alcazar and Denisse Fernandez
+# @version 5.0, 11/26/23
+#
+
 from flask import Flask
 from flask_cors import CORS
 import routes
@@ -50,6 +55,14 @@ def filter_level_2():
 def filter_level_3():
     return routes.filter_level_3()
 
+@app.route('/alert-details', methods=['POST'])
+def post_alert_details():
+    return routes.post_alert_details()
+
+@app.route('/alert-details', methods=['GET'])
+def get_alert_details():
+    return routes.get_alert_details()
+
 if __name__ == '__main__':
     #app.run(debug=True, port=5000)
 
@@ -66,7 +79,7 @@ if __name__ == '__main__':
 
         alerts = Alerts()
         alerts_table = alerts.displayAlerts()
-        print(alerts_table)
+        #print(alerts_table)
         app.run(debug=True, port=5000)
 
 
