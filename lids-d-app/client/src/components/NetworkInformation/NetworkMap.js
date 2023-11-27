@@ -1,8 +1,10 @@
 /**
- * @author Joshua Shoemaker 11/6 - 111/8/23, 11/16 - 11/17/23
- * @version 1.2
- * @modifers Brittany Madrigal 11/6 - 11/10/23, 11/18 - 11/19/23
+ * @author X
+ * @version 1.0, 05/05/23
 */
+/**
+ * @modifiers
+ */
 
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
@@ -92,48 +94,55 @@ const DeviceNode = ({ device, destIp }) => {
 };
 //Setup for hardcoded examples of users of the network
 function NetworkMap() {
-  const [devices, setDevices] = useState([
-    { id: 1, os: 'Windows', status: 'recognized', x: 150, y: 100, host: "Diana"},
-    { id: 2, os: 'Linux', status: 'unknown', x: 300, y: 150, host:"unknown"},
-    { id: 3, os: 'Mac', status: 'recognized', x: 450, y: 175, host:"Sebastian"}
-  ]);
-  const [destIpData, setDestIpData] = useState([]);
-  const navigate = useNavigate();
+    // For simplicity, we're using static data here.
+    const [devices, setDevices] = React.useState([
+        { id: 1, name: "Device 1", status: "recognized", x: 50, y: 50 },
+        { id: 2, name: "Device 2", status: "unknown", x: 100, y: 100 },
+        { id: 3, name: "Device 3", status: "recognized", x: 150, y: 150 },
+    ]);
+/*
+function NetworkMap() {
+    const [devices, setDevices] = React.useState([]);
 
-  useEffect(() => {
+    React.useEffect(() => {
+        fetch("/api/devices")
+            .then(response => response.json())
+            .then(data => {
+                // Assuming the API returns an array of devices
+                setDevices(data);
+            });
+    }, []);
+    */
+    const navigate = useNavigate(); // Added hook
+
+    const handleConfigureServer = () => { // Added function
+        navigate('/config-server');
+      };
     
-    // Fetch IP from database
-    Axios.get('http://127.0.0.1:5000/getAlertsIP')
-      .then((response) => {
-        const destIpData = response.data.map(item => item.dest_ip);
-        setDestIpData(destIpData);
-      })
-      .catch((error) => {
-        console.error("Error fetching dest_ip data:", error);
-      });
-  }, []);
+      const handleViewAlerts = () => {
+        navigate('/view-alerts')
+      };
+      
+      const handleNetworkInfo = () => {
+        navigate('/network-map')
+      };
 
-  // Handlers for navigation of buttons
-  const handleConfigureServer = () => navigate('/config-server');
-  const handleViewAlerts = () => navigate('/view-alerts');
-  const handleNetworkInfo = () => navigate('/network-map');
+    return (
+        <div>
+            <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
+            <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
+            <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
+            <svg width="400" height="400">
+                {devices.map(device => (
+                    <DeviceNode key={device.id} device={device} />
+                ))}
+            </svg>
 
-  //return for button functions
-  return (
-    <div>
-      <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
-      <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
-      <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
-      <svg width="1000" height="600">
-        {devices.map((device, index) => (
-          <DeviceNode key={device.id} device={device} destIp={destIpData[index]} />
-        ))}
-      </svg>
-      <Link to="/network-info">
-        <button>Network Info</button>
-      </Link>
-    </div>
-  );
+            <Link to="/network-info">
+                <button>Network Info</button>
+            </Link>
+        </div>
+    );
 }
 
 export default NetworkMap;

@@ -2,6 +2,9 @@
  * @author X
  * @version 1.0, 05/05/23
 */
+/**
+ * @modifiers
+ */
 
 import React, { useState } from 'react';
 import './SortByDropdown.css'
@@ -17,6 +20,7 @@ function SortByDropdown({ onSort }) {
   };
 
   return (
+    // Sorting Alerts by specific category
     <div className="sort-by-dropdown">
       <center-label>Sort Alerts By</center-label>
       <select value={selectedOption} onChange={handleChange}>

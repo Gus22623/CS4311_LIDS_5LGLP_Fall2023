@@ -2,6 +2,9 @@
  * @author X
  * @version 1.0, 05/05/23
 */
+/**
+ * @modifiers
+ */
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
