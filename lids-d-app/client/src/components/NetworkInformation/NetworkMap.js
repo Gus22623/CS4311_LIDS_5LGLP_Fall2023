@@ -5,128 +5,80 @@
  * @modifers Brittany Madrigal 
  * @modified 11/6/23, 11/7/23, 11/10/23, 11/18 - 11/19/23
 */
-
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-//Import the nessecary images for OS display
-import Windows_known from './microsoft-logo-known.png';
-import Windows_unknown from './windows-logo-unknown.png';
-import Linux_known from './linux-logo-known.png';
-import Linux_unknown from './linux-logo-unknown.png'; 
-import Mac_known from './apple-logo-known.png'; 
-import Mac_unknown from './apple-logo-unknown.png';
-
-//Perameters for OS image for all users. 
-//Includes known and unknown for Linux, Mac and Windows 
-const getOsImage = (osName, status) => {
-  const osStatus = status === 'recognized' ? 'known' : 'unknown';
-  switch (`${osName}_${osStatus}`) {
-    case 'Windows_known':
-      return Windows_known;
-    case 'Windows_unknown':
-      return Windows_unknown;
-    case 'Linux_known':
-      return Linux_known;
-    case 'Linux_unknown':
-      return Linux_unknown;
-    case 'Mac_known':
-      return Mac_known;
-    case 'Mac_unknown':
-      return Mac_unknown;
-    default:
-      return null;
-  }
-};
-//Perameters for the surrounding rectangle, padding and dimensions of the elements inside (text, OS image, status)
-const DeviceNode = ({ device, destIp }) => {
-  const osImage = getOsImage(device.os, device.status);
-  const rectWidth = 120;
-  const rectHeight = 150; 
-  const padding = 10;
-  const textSize = 14;
-  
-  //Return of the elements(surrounding rectangle, Host information text, status circle, OS image, IP Address text)
-  return (
-    <g>
-      <rect
-        x={device.x - rectWidth/2}
-        y={device.y - rectHeight / 2}
-        width={rectWidth}
-        height={rectHeight}
-        fill="none"
-        stroke="black"
-        strokeWidth="2"
-      />
-      <text 
-      x={device.x - padding} 
-      y={device.y + rectHeight/4 - padding} 
-      textAnchor="middle" 
-      fontSize={textSize}
-      fill={device.host.toLowerCase() === 'unknown' ? 'red' : 'black'}>
-      Host: {device.host} </text>
-
-      <circle 
-      cx={device.x + rectWidth/2-padding} 
-      cy={device.y + rectHeight/4 - padding} 
-      r={5} 
-      fill={device.status === 'recognized' ? 'green' : 'red'} />
-      
-      {osImage && (
-        <image
-          x={device.x - rectWidth / 4 - 2}
-          y={device.y - rectHeight / 2 + padding}
-          href={osImage}
-          width="65"
-          height="65"
-          textAnchor='left'
-        />
-      )}
-      <text x={device.x - rectWidth / 3} 
-      y={device.y + rectHeight / 2 - padding } 
-      textAnchor="left" 
-      fontSize={textSize}
-      fill={device.host.toLowerCase() === 'unknown' ? 'red' : 'black'}>
-      IP: {destIp}</text>
-    </g>
-  );
-};
-//Setup for hardcoded examples of users of the network
 function NetworkMap() {
-  const [devices, setDevices] = useState([
-    { id: 1, os: 'Windows', status: 'recognized', x: 150, y: 100, host: "Diana"},
-    { id: 2, os: 'Linux', status: 'unknown', x: 300, y: 150, host:"unknown"},
-    { id: 3, os: 'Mac', status: 'recognized', x: 450, y: 175, host:"Sebastian"}
-  ]);
-  const [destIpData, setDestIpData] = useState([]);
+  const [sourceIpData, setSourceIpData] = useState([]);
   const navigate = useNavigate();
 
+  // Fetch source_ip data 
   useEffect(() => {
-    
-    // Fetch IP from database
     Axios.get('http://127.0.0.1:5000/getAlertsIP')
       .then((response) => {
-        const destIpData = response.data.map(item => item.dest_ip);
-        setDestIpData(destIpData);
+        setSourceIpData(response.data.map((item) => ({
+          ip: item.source_ip,
+          status: isIpRecognized(item.source_ip) ? 'recognized' : 'unrecognized',
+        })));
       })
       .catch((error) => {
-        console.error("Error fetching dest_ip data:", error);
+        console.error("Error fetching source_ip data:", error);
       });
   }, []);
 
-  // Handlers for navigation of buttons
-  const handleViewAlerts = () => navigate('/view-alerts');
+  // Fetch the whitelist from the XML file
+  const whiteList= () => {
+    useEffect(() => {
+      Axios.get('./ipAddresses_whitelist.xml')
+        .then((response) => {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(response.data, 'text/xml');
+  
+          // Extract IP addresses from parsed XML data
+          const whitelist = Array.from(xmlDoc.querySelectorAll('ip')).map((ipNode) => ipNode.textContent);
+  
+          // Update state based on the whitelist
+          setSourceIpData((data) =>
+            data.map((item) => ({
+              ...item,
+              status: isIpRecognized(item.ip, whitelist) ? 'recognized' : 'unrecognized',
+            }))
+          );
+        })
+        .catch((error) => {
+          console.error('Error fetching whitelist:', error.message);
+        });
+    }, []);
 
-  //return for button functions
+  };
+
+  // Handler for the back button
+  const handleBack = () => {
+    navigate('/view-alerts'); 
+  };
+
   return (
     <div>
-      <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
-      <svg width="1000" height="600">
-        {devices.map((device, index) => (
-          <DeviceNode key={device.id} device={device} destIp={destIpData[index]} />
-        ))}
-      </svg>
+      <button onClick={handleBack}>Back to Network Information</button>
+      <table>
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sourceIpData.map((item, index) => (
+            <tr key={index}>
+              <td>{item.ip}</td>
+              <td style={{ color: item.status === 'recognized' ? 'green' : 'red' }}>
+                {item.status === 'recognized' ? '✔' : '✖'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
