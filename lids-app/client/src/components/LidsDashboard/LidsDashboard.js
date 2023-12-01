@@ -168,7 +168,7 @@ const handleFilter = (criteria) => {
   return(
     <div className="lids-dashboard">
       <div className="top-section">
-      <button className="go-back-button">Go Back</button>
+      <button className="go-back-button"onClick={handleGoBack}>Go Back</button>
         <h1 className="h1-custom">LIDS Dashboard</h1>
       </div>
       <div className="lids-ip-connection">
