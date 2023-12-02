@@ -1,7 +1,10 @@
 /**
- * @author X
- * @version 1.0, 05/05/23
+ * @author Carlos Alcazar and Denisse Fernandez
+ * @version 5.0, 11/26/23
 */
+/**
+ * @modifiers
+ */
 
 import React from 'react';
 import './AlertDisplay.css';

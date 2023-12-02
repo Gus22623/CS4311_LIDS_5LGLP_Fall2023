@@ -1,3 +1,8 @@
+#
+# @author Ricardo Sida, Carlos Alcazar and Denisse Fernandez
+# @version 5.0, 11/26/23
+#
+
 from flask import Flask
 from flask_cors import CORS
 import routes
@@ -8,6 +13,8 @@ from LIDS_Agent import config
 from LIDS_Agent import Alerts
 from db import cursor, db
 import socket
+import sys
+import signal
 
 '''THIS WILL BE MOVED TO ROUTES for the queries (also will be used in React - Carlos)'''
 hostname=socket.gethostname()
@@ -50,11 +57,25 @@ def filter_level_2():
 def filter_level_3():
     return routes.filter_level_3()
 
+@app.route('/alert-details', methods=['POST'])
+def post_alert_details():
+    return routes.post_alert_details()
+
+@app.route('/alert-details', methods=['GET'])
+def get_alert_details():
+    return routes.get_alert_details()
+
+def signal_handler(sig, frame):
+        print("Ctrl+C pressed. Exiting gracefully.")
+        sys.exit(0) 
+
+signal.signal(signal.SIGINT, signal_handler)
+
 if __name__ == '__main__':
     #app.run(debug=True, port=5000)
 
     # Create an instance of PacketCapture
-    packet_capture = PacketCapture(interface="Ethernet")
+    packet_capture = PacketCapture(interface="Adapter for loopback traffic ca")
     my_Config = config()
 
     # Flag to track if packet capture is active
@@ -66,7 +87,7 @@ if __name__ == '__main__':
 
         alerts = Alerts()
         alerts_table = alerts.displayAlerts()
-        print(alerts_table)
+        #print(alerts_table)
         app.run(debug=True, port=5000)
 
 

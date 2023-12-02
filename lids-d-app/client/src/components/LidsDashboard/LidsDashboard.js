@@ -2,6 +2,9 @@
  * @author X
  * @version 1.0, 05/05/23
 */
+/**
+ * @modifiers
+ */
 
 import React, { useEffect, useState } from 'react';
 import SortByDropdown from '../SortByDropdown/SortByDropdown';
@@ -185,7 +188,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -196,7 +200,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -212,7 +217,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -223,7 +229,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -239,7 +246,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -250,7 +258,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -270,7 +279,7 @@ const handleFilter = (criteria) => {
         <SortByDropdown onSort={handleSort} />
 
         {criteria === "Level" ? (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -278,7 +287,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Protocol</th>
                     <th>Description</th>
                   </tr>
@@ -290,7 +300,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
@@ -299,7 +310,7 @@ const handleFilter = (criteria) => {
               </table>
             </div>
           ) : criteria === "Time" ? (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -307,7 +318,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Protocol</th>
                     <th>Description</th>
                   </tr>
@@ -319,7 +331,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
@@ -328,7 +341,7 @@ const handleFilter = (criteria) => {
               </table>
             </div>
           ) : criteria === "IP" ? (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -336,7 +349,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Protocol</th>
                     <th>Description</th>
                   </tr>
@@ -348,7 +362,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
@@ -357,7 +372,7 @@ const handleFilter = (criteria) => {
               </table>
             </div>
           ) : criteria === "Protocol" ? (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -365,7 +380,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Protocol</th>
                     <th>Description</th>
                   </tr>
@@ -377,7 +393,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>
@@ -386,7 +403,7 @@ const handleFilter = (criteria) => {
               </table>
             </div>
             ) : (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -394,7 +411,8 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
+                    <th>Dest Port</th>
                     <th>Protocol</th>
                     <th>Description</th>
                   </tr>
@@ -406,7 +424,8 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
+                      <td>{val.dest_port}</td>
                       <td>{val.protocol}</td>
                       <td>{val.desc}</td>
                     </tr>

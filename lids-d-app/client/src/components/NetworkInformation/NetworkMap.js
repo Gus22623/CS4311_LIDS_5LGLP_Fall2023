@@ -5,6 +5,7 @@
  * @modifers Brittany Madrigal 
  * @modified 11/6/23, 11/7/23, 11/10/23, 11/18 - 11/19/23
 */
+
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 function NetworkMap() {
   const [sourceIpData, setSourceIpData] = useState([]);
   const navigate = useNavigate();
-
+  
   // Fetch source_ip data 
   useEffect(() => {
     Axios.get('http://127.0.0.1:5000/getAlertsIP')

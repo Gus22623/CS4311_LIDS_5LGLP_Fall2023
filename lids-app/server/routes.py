@@ -1,6 +1,16 @@
+#
+# @author Ricardo Sida, Carlos Alcazar and Denisse Fernandez
+# @version 5.0, 11/26/23
+#
+
 from flask import request, jsonify
 from db import cursor, db
 from xml.etree import ElementTree as ET
+import json
+import socket
+
+hostname = socket.gethostname()
+ip_address = socket.gethostbyname(hostname)
 
 def upload_xml():
     uploaded_file = request.data  # Get the raw data of the request
@@ -30,11 +40,11 @@ def upload_xml():
 def getAlerts():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
@@ -43,11 +53,11 @@ def getAlerts():
 def get_alerts_level():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY level ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY level ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
@@ -56,11 +66,11 @@ def get_alerts_level():
 def get_alerts_time():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY time ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY time ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
@@ -69,11 +79,11 @@ def get_alerts_time():
 def get_alerts_ip():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY source_ip ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY source_ip ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
@@ -82,11 +92,11 @@ def get_alerts_ip():
 def get_alerts_protocol():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY protocol ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY protocol ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
@@ -95,11 +105,11 @@ def get_alerts_protocol():
 def filter_level_1():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1' AND level = '1'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' AND level = '1'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
@@ -108,11 +118,11 @@ def filter_level_1():
 def filter_level_2():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1' AND level = '2'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' AND level = '2'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
@@ -121,12 +131,34 @@ def filter_level_2():
 def filter_level_3():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT level, time, source_ip, dest_ip, port, protocol, description FROM alert WHERE dest_ip = '127.0.0.1' AND level = '3'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' AND level = '3'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
-        alerts_data = [{'level': alert[0], 'time': alert[1], 'source_ip': alert[2], 'dest_ip': alert[3], 'port': alert[4], 'protocol': alert[5], 'desc': alert[6]} for alert in alerts]
+        alerts_data = [{'level': alert[1], 'time': alert[2], 'source_ip': alert[3], 'dest_ip': alert[4], 'src_port': alert[5], 'desc': alert[8], 'protocol': alert[7], 'id': alert[0], 'dest_port': alert[6]} for alert in alerts]
 
         return jsonify(alerts_data)
     except Exception as e:
         return str(e)
+    
+def post_alert_details():
+    details = request.data.decode('utf-8')
+    details_dict = json.loads(details)
+
+    id = details_dict.get('id')
+    desc = details_dict.get('desc')
+    dest_ip = details_dict.get('dest_ip')
+    level = details_dict.get('level')
+    port = details_dict.get('port')
+    protocol = details_dict.get('protocol')
+    source_ip = details_dict.get('source_ip')
+    time = details_dict.get('time')
+    src_port = details_dict.get('src_port')
+    dest_port = details_dict.get('dest_port')
+    
+    #return details_dict
+    return jsonify(details_dict)
+
+def get_alert_details():
+    data = request.data
+    return data

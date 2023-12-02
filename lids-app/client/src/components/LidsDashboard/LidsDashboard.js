@@ -1,7 +1,10 @@
 /**
- * @author X
- * @version 1.0, 05/05/23
+ * @author Carlos Alcazar and Denisse Fernandez
+ * @version 5.0, 11/26/23
 */
+/**
+ * @modifiers
+ */
 
 import React, { useEffect, useState, Switch} from 'react';
 import AlertsDisplay from '../AlertDisplay/AlertDisplay';
@@ -32,6 +35,8 @@ function LidsDashboard() {
   const [alertListLevel1, setAlertListLevel1  ] = useState([]);
   const [alertListLevel2, setAlertListLevel2 ] = useState([]);
   const [alertListLevel3, setAlertListLevel3  ] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [ipAddress, setIpAddress] = useState(null);
 
   useEffect(() => {
     const ourRequest = Axios.CancelToken.source()
@@ -54,7 +59,22 @@ function LidsDashboard() {
     };
   }, []); 
 
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+      try {
+        const response = await fetch('https://httpbin.org/ip');
+        const data = await response.json();
+        setIpAddress(data.origin);
+      } catch (error) {
+        console.error('Error fetching IP address:', error);
+      }
+    };
+
+    fetchIpAddress();
+  }, []);
+
   const navigate = useNavigate(); // Added hook
+
 
   // Sort Alerts by certain criteria
   const handleSort = (criteria) => {
@@ -140,14 +160,34 @@ const handleFilter = (criteria) => {
     navigate('/');
   };
 
-  return (
+  const handleRowClick = (rowData) => {
+    const jsonData = JSON.stringify(rowData);
+    fetch('http://127.0.0.1:5000/alert-details', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Set the content type to json
+      },
+      body: jsonData,
+    })
+    .then(response => response.text())
+    .then(data => {
+      console.log(data);
+      alert(data)
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  };
+
+
+  return(
     <div className="lids-dashboard">
       <div className="top-section">
-      <button className="go-back-button">Go Back</button>
+      <button className="go-back-button"onClick={handleGoBack}>Go Back</button>
         <h1 className="h1-custom">LIDS Dashboard</h1>
       </div>
       <div className="lids-ip-connection">
-        <div className="lids-ip">LIDS IP: 127.0.0.1 </div>
+        <div className="lids-ip">LIDS IP: {ipAddress} </div>
         <div></div>
         <div className="connection-status">{connectionStatus}</div>
       </div>
@@ -163,18 +203,18 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListLevel1.map((val, index) => (
-                    <tr key={index} className={`level-${val.level}`}>
+                    <tr key={index} className={`level-${val.level} ${selectedRow === val ? 'selected' : ''}`} onClick={() => handleRowClick(val)}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -190,18 +230,18 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListLevel2.map((val, index) => (
-                    <tr key={index} className={`level-${val.level}`}>
+                    <tr key={index} className={`level-${val.level} ${selectedRow === val ? 'selected' : ''}`} onClick={() => handleRowClick(val)}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -217,18 +257,18 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListLevel3.map((val, index) => (
-                    <tr key={index} className={`level-${val.level}`}>
+                    <tr key={index} className={`level-${val.level} ${selectedRow === val ? 'selected' : ''}`} onClick={() => handleRowClick(val)}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -248,7 +288,7 @@ const handleFilter = (criteria) => {
       <SortByDropdown onSort={handleSort} />
 
         {criteria === "Level" ? (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -256,18 +296,18 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListLevel.map((val, index) => (
-                    <tr key={index} className={`level-${val.level}`}>
+                    <tr key={index} className={`level-${val.level} ${selectedRow === val ? 'selected' : ''}`} onClick={() => handleRowClick(val)}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -275,7 +315,7 @@ const handleFilter = (criteria) => {
               </table>
             </div>
           ) : criteria === "Time" ? (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -283,18 +323,18 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListTime.map((val, index) => (
-                    <tr key={index} className={`level-${val.level}`}>
+                    <tr key={index} className={`level-${val.level} ${selectedRow === val ? 'selected' : ''}`} onClick={() => handleRowClick(val)}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -302,7 +342,7 @@ const handleFilter = (criteria) => {
               </table>
             </div>
           ) : criteria === "IP" ? (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -310,18 +350,18 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertListIP.map((val, index) => (
-                    <tr key={index} className={`level-${val.level}`}>
+                    <tr key={index} className={`level-${val.level} ${selectedRow === val ? 'selected' : ''}`} onClick={() => handleRowClick(val)}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -329,7 +369,7 @@ const handleFilter = (criteria) => {
               </table>
             </div>
           ) : (
-            <div className="table-container">
+            <div className="alert-table-container">
               <table className="alert-table">
                 <thead>
                   <tr>
@@ -337,18 +377,18 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
                 <tbody>
                   {alertList.map((val, index) => (
-                    <tr key={index} className={`level-${val.level}`}>
+                    <tr key={index} className={`level-${val.level} ${selectedRow === val ? 'selected' : ''}`} onClick={() => handleRowClick(val)}>
                       <td>{val.level}</td>
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}

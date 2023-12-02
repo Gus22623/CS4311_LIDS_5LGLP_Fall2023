@@ -1,5 +1,9 @@
 .alert-display-container {
   padding: 20px;
+  border-radius: 20px;
+  height: 244px;
+  padding: 0 10px 10px 10px;
+  overflow: scroll;
 }
 
 .header {
@@ -17,6 +21,10 @@ h1 {
 .alert-table {
   width: 100%;
   border-collapse: collapse;
+  padding: 20px;
+  border-radius: 20px;
+  height: 244px;
+  overflow: scroll;
 }
 
 th, td {
