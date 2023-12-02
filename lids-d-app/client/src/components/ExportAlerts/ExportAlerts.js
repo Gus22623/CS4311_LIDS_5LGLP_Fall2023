@@ -1,5 +1,5 @@
 /**
- * @author X
+ * @author Brittany Madrigal
  * @version 1.0, 05/05/23
 */
 /**
