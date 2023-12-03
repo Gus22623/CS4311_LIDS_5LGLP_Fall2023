@@ -340,19 +340,23 @@ class PacketCapture:
         try:
             # Create an Alert object
             alert = Alert()
-            #print(alert)
             alert.source = packet.ip.src
             print(alert.source)
             alert.destination = packet.ip.dst
             print(alert.destination)
             alert.protocol = packet.transport_layer
             alert.length = packet.length
-            alert.src_port = packet.tcp.srcport
-            print(f"Src Port: {alert.src_port}")
-            #alert_level = 0
+            
+            if 'TCP' in packet:
+                alert.src_port = packet.tcp.srcport
+                alert.dest_port = packet.tcp.dstport
 
-            alert.dest_port = packet.tcp.dstport
-            print(f"Dest Port: {alert.dest_port}")
+            elif 'UDP' in packet:
+                alert.src_port = packet.udp.srcport
+                alert.dest_port = packet.udp.dstport
+            else:
+                alert.src_port = ''
+                alert.dest_port = ''
 
             alert.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             alert.description = description

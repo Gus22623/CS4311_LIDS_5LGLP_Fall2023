@@ -8,6 +8,7 @@ from db import cursor, db
 from xml.etree import ElementTree as ET
 import json
 import socket
+import psutil
 
 hostname = socket.gethostname()
 ip_address = socket.gethostbyname(hostname)
@@ -162,3 +163,21 @@ def post_alert_details():
 def get_alert_details():
     data = request.data
     return data
+
+
+def post_storage_capacity():
+    threshold_50_percent = 50
+    threshold_80_percent = 80
+    
+    disk_usage = psutil.disk_usage('/')
+
+    used_percentage = disk_usage.percent
+
+    if used_percentage >= threshold_80_percent:
+        print(f"Alert: Storage capacity is at {used_percentage}%. Consider freeing up space.")
+        
+    elif used_percentage >= threshold_50_percent:
+        print(f"Warning: Storage capacity is at {used_percentage}%. Monitor space usage.")
+
+    used_percentage = str(used_percentage) +"%" 
+    return jsonify(used_percentage)

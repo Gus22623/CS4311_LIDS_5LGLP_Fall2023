@@ -65,6 +65,10 @@ def post_alert_details():
 def get_alert_details():
     return routes.get_alert_details()
 
+@app.route('/storage-capacity', methods=['GET'])
+def post_storage_capacity():
+    return routes.post_storage_capacity()
+
 def signal_handler(sig, frame):
         print("Ctrl+C pressed. Exiting gracefully.")
         sys.exit(0) 
@@ -75,7 +79,7 @@ if __name__ == '__main__':
     #app.run(debug=True, port=5000)
 
     # Create an instance of PacketCapture
-    packet_capture = PacketCapture(interface="Adapter for loopback traffic ca")
+    packet_capture = PacketCapture(interface="Wi-i")
     my_Config = config()
 
     # Flag to track if packet capture is active
