@@ -41,7 +41,7 @@ def upload_xml():
 def getAlerts():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
@@ -54,7 +54,7 @@ def getAlerts():
 def get_alerts_level():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY level ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15' ORDER BY level ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
@@ -67,7 +67,7 @@ def get_alerts_level():
 def get_alerts_time():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY time ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15' ORDER BY time ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
@@ -80,7 +80,7 @@ def get_alerts_time():
 def get_alerts_ip():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY source_ip ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15' ORDER BY source_ip ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
@@ -93,7 +93,7 @@ def get_alerts_ip():
 def get_alerts_protocol():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' ORDER BY protocol ASC")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15' ORDER BY protocol ASC")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
@@ -106,7 +106,7 @@ def get_alerts_protocol():
 def filter_level_1():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' AND level = '1'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15' AND level = '1'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
@@ -119,7 +119,7 @@ def filter_level_1():
 def filter_level_2():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' AND level = '2'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15' AND level = '2'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response
@@ -132,7 +132,7 @@ def filter_level_2():
 def filter_level_3():
     try:
         # Fetch data from the 'alerts' table
-        cursor.execute("SELECT * FROM alert WHERE dest_ip = '127.0.0.1' AND level = '3'")
+        cursor.execute("SELECT * FROM alert WHERE dest_ip = '10.0.2.15' AND level = '3'")
         alerts = cursor.fetchall()
 
          # Convert data to a list of dictionaries for JSON response

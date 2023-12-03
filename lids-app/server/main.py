@@ -79,7 +79,7 @@ if __name__ == '__main__':
     #app.run(debug=True, port=5000)
 
     # Create an instance of PacketCapture
-    packet_capture = PacketCapture(interface="Wi-i")
+    packet_capture = PacketCapture(interface="eth0")
     my_Config = config()
 
     # Flag to track if packet capture is active
@@ -92,6 +92,6 @@ if __name__ == '__main__':
         alerts = Alerts()
         alerts_table = alerts.displayAlerts()
         #print(alerts_table)
-        app.run(debug=True, port=5000)
+        app.run(debug=True, port=5011)
 
 
