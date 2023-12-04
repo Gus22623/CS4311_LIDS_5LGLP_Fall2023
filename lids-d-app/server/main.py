@@ -123,5 +123,3 @@ if __name__ == '__main__':
     socket_thread.start()
 
     app.run(debug=True, port=5000)
-
-
