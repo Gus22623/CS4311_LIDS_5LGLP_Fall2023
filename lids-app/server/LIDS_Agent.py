@@ -21,6 +21,7 @@ from cryptography.fernet import Fernet
 import socket
 from socket import AF_INET, SOCK_STREAM
 import base64
+import time
 
 """
 NOTE: Wireshark needs to be installed in your machine to use pyshark
@@ -86,14 +87,15 @@ class Connection():
     
     def send_alert(self, alert_data):
         try:
-            key = b'LidsTeam5Key1234567890123456'[:32]
-            key = base64.urlsafe_b64encode(key)
+            #key = b'LidsTeam5Key1234567890123456'[:32]
+            key = b'u-Tab2rqhRSPz5IO4yz_qy3fGtAQr-ohHahuPXSsidg='
+            #key = base64.urlsafe_b64encode(key)
             cipher_suite = Fernet(key)
 
             if self.connection:
                 alert_str = f"{alert_data['level']},{alert_data['time']},{alert_data['source_ip']},{alert_data['dest_ip']},{alert_data['source_port']},{alert_data['dest_port']},{alert_data['protocol']},{alert_data['description']}"
-                #alert_str = alert_str.encode()
-                encrypted_data = cipher_suite.encrypt(alert_str.encode())
+                alert_str = alert_str.encode()
+                encrypted_data = cipher_suite.encrypt(alert_str)
 
                 self.connection.sendall(encrypted_data)
             else:
@@ -431,7 +433,7 @@ class PacketCapture:
                 "protocol": alert.protocol,
                 "description": alert.description
             }
-
+            time.sleep(1)
             self.connection.send_alert(alert_d)
 
             '''

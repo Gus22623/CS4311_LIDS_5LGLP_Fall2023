@@ -83,13 +83,17 @@ def handle_client(client_socket):
 
 def process_received_data(data):
     print(f"Processing data: {data}")
-    key = b'LidsTeam5Key1234567890123456'[:32]
+    #key = b'LidsTeam5Key1234567890123456'[:32]
+    key = b'u-Tab2rqhRSPz5IO4yz_qy3fGtAQr-ohHahuPXSsidg='
     cipher_suite = Fernet(key)
 
-    decrypted_data = cipher_suite.decrypt(encrypted_data)
+    decrypted_data = cipher_suite.decrypt(data)
+    #print(decrypted_data)
 
-    decrypted_data = data.decode('utf-8').split(',')
-    print(f"Received alert: {decrypted_data}")
+    decoded = decrypted_data.decode('utf-8').split(',')
+    #print(f"alert decoded from binary {decrypted_data}")
+    print(f"Received alert: {decoded}")
+    print(type(decoded))
 
     try:
         sql_insert_alert = (
@@ -98,17 +102,18 @@ def process_received_data(data):
             )
 
         cursor.execute(sql_insert_alert, (
-            decrypted_data[0], 
-            decrypted_data[1],
-            decrypted_data[2],
-            decrypted_data[3],
-            decrypted_data[4], 
-            decrypted_data[5],
-            decrypted_data[6],
-            decrypted_data[7]
+            decoded[0], 
+            decoded[1],
+            decoded[2],
+            decoded[3],
+            decoded[4], 
+            decoded[5],
+            decoded[6],
+            decoded[7]
         ))
 
         db.commit()
+        #cursor.close()
     except Exception as e:
         print(f"Error storing alert from LIDS in database {str(e)}")
 
