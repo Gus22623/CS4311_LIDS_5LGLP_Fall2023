@@ -264,7 +264,7 @@ class PacketCapture:
         self.alerts.append(alerts)
         
         # Specify the path to your CSV file
-        csv_file_path = "/media/kali/8874-BD0E/alerts.csv"
+        csv_file_path = "/media/kali/ESD-USB/alerts.csv"
 
         # Write the alert to the an external drive
         with open(csv_file_path, mode='a', newline='') as csv_file:
