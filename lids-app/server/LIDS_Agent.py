@@ -166,53 +166,67 @@ class PacketCapture:
             #     src = packet.ip.src
             #     dst = packet.ip.dst
 
-            #     if 'TCP' in packet:
-            #         protocol = 'TCP'
-            #         packet_length = int(packet.length)
-            #         flags = packet.tcp.flags
+                if 'TCP' in packet:
+                    protocol = 'TCP'
+                    packet_length = int(packet.length)
+                    flags = packet.tcp.flags
+                    src_port = packet.tcp.srcport
+                    dest_port = packet.tcp.dstport
 
-            #         if 'SYN' in flags:
-            #             description = 'TCP Handshake SYN'
-            #         else:
-            #             description = 'Other TCP Packet'
-            #     elif 'UDP' in packet:
-            #         protocol = 'UDP'
-            #         packet_length = int(packet.length)
-            #         description = 'UDP Packet'
-            #     elif 'ICMP' in packet:
-            #         protocol = 'ICMP'
-            #         packet_length = int(packet.length)
-            #         description = 'ICMP Packet'
-            #     elif 'ARP' in packet:
-            #         protocol = 'ARP'
-            #         packet_length = int(packet.length)
-            #         description = 'ARP Packet'
-            #     elif 'HTTP' in packet:
-            #         protocol = 'HTTP'
-            #         packet_length = int(packet.length)
-            #         description = 'HTTP Packet'
-            #     else:
-            #         protocol = 'Other'
-            #         packet_length = int(packet.length)
-            #         description = "Unknown/Other Protocol"
+                    if 'SYN' in flags:
+                        description = 'TCP Handshake SYN'
+                    else:
+                        description = 'Other TCP Packet'
+                elif 'UDP' in packet:
+                    protocol = 'UDP'
+                    packet_length = int(packet.length)
+                    description = 'UDP Packet'
+                    src_port = packet.udp.srcport
+                    dest_port = packet.udp.dstport
+                elif 'ICMP' in packet:
+                    protocol = 'ICMP'
+                    packet_length = int(packet.length)
+                    description = 'ICMP Packet'
+                    src_port = ''
+                    dest_port = ''
+                elif 'ARP' in packet:
+                    protocol = 'ARP'
+                    packet_length = int(packet.length)
+                    description = 'ARP Packet'
+                    src_port = ''
+                    dest_port = ''
+                elif 'HTTP' in packet:
+                    protocol = 'HTTP'
+                    packet_length = int(packet.length)
+                    description = 'HTTP Packet'
+                    src_port = packet.tcp.srcport
+                    dest_port = packet.tcp.dstport
+                else:
+                    protocol = 'Other'
+                    packet_length = int(packet.length)
+                    description = "Unknown/Other Protocol"
+                    src_port = ''
+                    dest_port = ''
                 
-            #     """
-            #     NOTE:Displaying packet information for debugging purposes
-            #     Uncomment the following line to display packet information
-            #     | |
-            #     V V
-            #     """
-            #     # Create a dictionary to represent the packet
-            #     packet_info = {
-            #         'Time': time,
-            #         'Source': src,
-            #         'Destination': dst,
-            #         'Protocol': protocol,
-            #         'Length': packet_length,
-            #         'Description': description
-            #     }
+                """
+                NOTE:Displaying packet information for debugging purposes
+                Uncomment the following line to display packet information
+                | |
+                V V
+                """
+                # Create a dictionary to represent the packet
+                packet_info = {
+                    'Time': time,
+                    'Source': src,
+                    'Destination': dst,
+                    'Protocol': protocol,
+                    'Length': packet_length,
+                    'Description': description,
+                    'Src Port': src_port,
+                    'Dest Port': dest_port
+                }
 
-            #     print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
+                print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}, Src Port: {src_port}, Dest Port: {dest_port}")
             #------------------------------------------------------------------------------------#
             
             # TODO: Implement packet analysis logic here
@@ -263,27 +277,38 @@ class PacketCapture:
         try:
             # Create an Alert object
             alert = Alert()
+            #print(alert)
             alert.source = packet.ip.src
+            print(alert.source)
             alert.destination = packet.ip.dst
+            print(alert.destination)
             alert.protocol = packet.transport_layer
             alert.length = packet.length
+            alert.src_port = packet.tcp.srcport
+            print(f"Src Port: {alert.src_port}")
+            #alert_level = 0
+
+            alert.dest_port = packet.tcp.dstport
+            print(f"Dest Port: {alert.dest_port}")
+
             alert.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             alert.description = description
+            #print("WHEREE", alert.level, alert.time, alert.source, alert.destination, alert.src_port, alert.dest_port, alert.protocol, alert.description)
 
             # Set the alert level based on the description
-            if description == self.unknown_IP:
+            if alert.description == self.unknown_IP:
                 alert_level = 3
-            elif description == self.port_scan:
+            elif alert.description == self.port_scan:
                 alert_level = 2
-            elif description == self.failed_login:
+            elif alert.description == self.failed_login:
                 alert_level = 1
             else:
                 alert_level = 0  # Set a default level if description doesn't match expected values
 
             # Execute SQL query to insert the alert data into the 'alert' table
             sql_insert_alert = (
-                "INSERT INTO alert (level, time, source_ip, dest_ip, protocol, port, description) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                "INSERT INTO alert (level, time, source_ip, dest_ip, src_port, dest_port, protocol, description) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             )
 
             cursor.execute(sql_insert_alert, (
@@ -291,8 +316,9 @@ class PacketCapture:
                 alert.time,
                 alert.source,
                 alert.destination,
+                alert.src_port, #alert.length
+                alert.dest_port,
                 alert.protocol,
-                alert.length,
                 alert.description
             ))
 
@@ -307,7 +333,9 @@ class Alert:
         self.source = None
         self.destination = None
         self.protocol = None
-        self.length = None
+        #self.length = None
+        self.src_port = None
+        self.dest_port = None
         self.description = None
         self.time = None
 

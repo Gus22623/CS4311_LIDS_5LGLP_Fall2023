@@ -13,6 +13,8 @@ from LIDS_Agent import config
 from LIDS_Agent import Alerts
 from db import cursor, db
 import socket
+import sys
+import signal
 
 '''THIS WILL BE MOVED TO ROUTES for the queries (also will be used in React - Carlos)'''
 hostname=socket.gethostname()
@@ -62,6 +64,12 @@ def post_alert_details():
 @app.route('/alert-details', methods=['GET'])
 def get_alert_details():
     return routes.get_alert_details()
+
+def signal_handler(sig, frame):
+        print("Ctrl+C pressed. Exiting gracefully.")
+        sys.exit(0) 
+
+signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == '__main__':
     #app.run(debug=True, port=5000)

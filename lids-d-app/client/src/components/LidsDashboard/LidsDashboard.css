@@ -86,3 +86,26 @@
   background-color: rgba(255, 0, 0, 0.5);
   color: rgb(100, 0, 0);
 }
+
+.alert-table-container{
+  border-radius: 20px;
+  height: 700px;
+  padding: 0 10px 10px 10px;
+  overflow: scroll;
+}
+
+Table thead{
+  background-color: gray;
+  position: sticky;
+  top: 0px;
+  margin: 0 0 0 0;
+  border-color: white;
+  border-radius: 1px;
+}
+
+.filter-section{
+  border-radius: 20px;
+  height: 700px;
+  padding: 0 10px 10px 10px;
+  overflow: scroll;
+}
