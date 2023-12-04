@@ -1,6 +1,7 @@
 ###########################################################
 # @author Ricardo Sida and Gustavo Ramirez
-# @version 0.1
+# @author Carlos Alcazar and Denisse Fernandez
+# @version 0.2
 ###########################################################
 
 # LIDS_Agent back end code.
@@ -16,6 +17,11 @@ from db import cursor, db
 from prettytable import PrettyTable
 from collections import defaultdict
 import asyncio
+from cryptography.fernet import Fernet
+import socket
+from socket import AF_INET, SOCK_STREAM
+import base64
+import time
 
 """
 NOTE: Wireshark needs to be installed in your machine to use pyshark
@@ -62,6 +68,41 @@ def connectToServer():
     # TODO: Implement connection logic here
     pass
 
+class Connection():
+    def __init__(self):
+        self.connection = None
+        self.address = None
+        self.port = None
+        self.serverSocket = None
+
+    def connect_to_server(self, server_address, server_port):
+        try:
+            self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.connection.connect((server_address, server_port))
+            self.address, self.port = self.connection.getsockname()
+            print(f"Connected to {server_address} on port {server_port}")
+
+        except Exception as e:
+            print(f"Error connecting to server: {str(e)}")
+    
+    def send_alert(self, alert_data):
+        try:
+            #key = b'LidsTeam5Key1234567890123456'[:32]
+            key = b'u-Tab2rqhRSPz5IO4yz_qy3fGtAQr-ohHahuPXSsidg='
+            #key = base64.urlsafe_b64encode(key)
+            cipher_suite = Fernet(key)
+
+            if self.connection:
+                alert_str = f"{alert_data['level']},{alert_data['time']},{alert_data['source_ip']},{alert_data['dest_ip']},{alert_data['source_port']},{alert_data['dest_port']},{alert_data['protocol']},{alert_data['description']}"
+                alert_str = alert_str.encode()
+                encrypted_data = cipher_suite.encrypt(alert_str)
+
+                self.connection.sendall(encrypted_data)
+            else:
+                print("Error: Not connected to server")
+        except Exception as e:
+            print(f"Error sending alert to server: {str(e)}")
+
 
 # Method to display saved PCAP file in Wireshark
 def open_pcap_file(pcap_file_path):
@@ -96,7 +137,7 @@ def open_pcap_file(pcap_file_path):
 
 # Class to handle packet capture
 class PacketCapture:
-    def __init__(self, interface='Wi-Fi'):
+    def __init__(self, interface='Wi-Fi', server_address='127.0.0.1', server_port=5010):
         self.interface = interface
         # self.display_filter = display_filter - NOTE: Removed this filter to capture all packets
         self.capture = pyshark.LiveCapture(interface=interface)
@@ -121,6 +162,12 @@ class PacketCapture:
         self.unknown_IP = "Unknown IP Address"
         self.port_scan = "Port Scan"
         self.failed_login = "Failed Login Attempt"
+
+        #Connection object and variables to LIDS-D
+        self.server_address = server_address
+        self.server_port = server_port
+        self.connection = Connection()
+        self.connection.connect_to_server(self.server_address, self.server_port)
 
     # Method to start packet capture
     def start_capture(self):
@@ -277,19 +324,27 @@ class PacketCapture:
         try:
             # Create an Alert object
             alert = Alert()
-            #print(alert)
             alert.source = packet.ip.src
             print(alert.source)
             alert.destination = packet.ip.dst
             print(alert.destination)
             alert.protocol = packet.transport_layer
             alert.length = packet.length
-            alert.src_port = packet.tcp.srcport
-            print(f"Src Port: {alert.src_port}")
-            #alert_level = 0
+            
+            if 'TCP' in packet:
+                alert.src_port = packet.tcp.srcport
+                alert.dest_port = packet.tcp.dstport
 
-            alert.dest_port = packet.tcp.dstport
-            print(f"Dest Port: {alert.dest_port}")
+            elif 'UDP' in packet:
+                alert.src_port = packet.udp.srcport
+                alert.dest_port = packet.udp.dstport
+
+            elif 'ICMP' in packet:
+                alert.src_port = ''
+                alert.dest_port = ''
+            else:
+                alert.src_port = ''
+                alert.dest_port = ''
 
             alert.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             alert.description = description
@@ -305,6 +360,20 @@ class PacketCapture:
             else:
                 alert_level = 0  # Set a default level if description doesn't match expected values
 
+            alert_d = {
+                "level": alert_level,
+                "time": alert.time,
+                "source_ip": alert.source,
+                "dest_ip": alert.destination,
+                "source_port": alert.src_port,
+                "dest_port" : alert.dest_port,
+                "protocol": alert.protocol,
+                "description": alert.description
+            }
+            time.sleep(1)
+            self.connection.send_alert(alert_d)
+
+            '''
             # Execute SQL query to insert the alert data into the 'alert' table
             sql_insert_alert = (
                 "INSERT INTO alert (level, time, source_ip, dest_ip, src_port, dest_port, protocol, description) "
@@ -323,6 +392,7 @@ class PacketCapture:
             ))
 
             db.commit()
+            '''
             #print("Alert stored in the database.")
         except Exception as e:
             print(f"Error storing alert in the database: {str(e)}")

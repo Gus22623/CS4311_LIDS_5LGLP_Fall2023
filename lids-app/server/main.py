@@ -65,6 +65,10 @@ def post_alert_details():
 def get_alert_details():
     return routes.get_alert_details()
 
+@app.route('/storage-capacity', methods=['GET'])
+def post_storage_capacity():
+    return routes.post_storage_capacity()
+
 def signal_handler(sig, frame):
         print("Ctrl+C pressed. Exiting gracefully.")
         sys.exit(0) 
@@ -88,6 +92,6 @@ if __name__ == '__main__':
         alerts = Alerts()
         alerts_table = alerts.displayAlerts()
         #print(alerts_table)
-        app.run(debug=True, port=5000)
+        app.run(debug=True, port=5011)
 
 

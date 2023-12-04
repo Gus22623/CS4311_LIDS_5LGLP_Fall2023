@@ -37,6 +37,7 @@ function LidsDashboard() {
   const [alertListLevel3, setAlertListLevel3  ] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [ipAddress, setIpAddress] = useState(null);
+  const [capacity, setCapacity] = useState(null);
 
   useEffect(() => {
     const ourRequest = Axios.CancelToken.source()
@@ -179,6 +180,20 @@ const handleFilter = (criteria) => {
     });
   };
 
+  useEffect(() => {
+    const fetchCapacity = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/storage-capacity');
+        const data = await response.json();
+        setCapacity(data);
+      } catch (error) {
+        console.error('Error fetching Storage Capacity:', error);
+      }
+    };
+
+    fetchCapacity();
+  }, []);
+
 
   return(
     <div className="lids-dashboard">
@@ -191,6 +206,7 @@ const handleFilter = (criteria) => {
         <div></div>
         <div className="connection-status">{connectionStatus}</div>
       </div>
+      <div className="capacity">Storage Capacity: {capacity}</div>
       <div className="bottom-section">
         {/* Index Table with Filtered Alerts */}
         <SortByDropdownFilter onSort={handleFilter} />
@@ -397,8 +413,9 @@ const handleFilter = (criteria) => {
             </div>
           )}        
           
-        <ErrorsDisplay errors={errors} />
+        {/*<ErrorsDisplay errors={errors} />
         <NotificationsDisplay notifications={notifications} />
+                  */}
       </div>
     </div>
   );
