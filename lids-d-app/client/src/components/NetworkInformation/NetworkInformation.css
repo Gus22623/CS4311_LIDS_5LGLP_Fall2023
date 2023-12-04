@@ -1,0 +1,55 @@
+.network-info {
+    background-color: #434C56; /* Primary background color from dashboard */
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Libre Baskerville', serif; /* Consistent font with dashboard */
+  }
+
+  .network-info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .network-info th, .network-info td {
+    padding: 10px;
+    border: 1px solid #9B9B9B; /* Border color from dashboard */
+    text-align: left;
+  }
+  
+  .network-info th {
+    background-color: #11253D; /* Header background color from dashboard */
+  }
+  
+  .network-info td {
+    background-color: #294893; /* Row background color from dashboard */
+    color: white; /* Text color for contrast */
+  }
+  
+  .network-info tr:nth-child(even) {
+    background-color: #9B9B9B; /* Alternating row color from dashboard */
+  }
+  
+  .network-info .recognized {
+    color: yellowgreen; /* Status color for recognized IPs */
+  }
+  
+  .network-info .unrecognized {
+    color: #e63939; /* Status color for unrecognized IPs */
+  }
+  
+  .network-info-button {
+    background-color: lightgray;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    color: black;
+    cursor: pointer;
+    margin: 10px 0; /* Spacing around buttons */
+  }
+  
+  .network-info-button:hover {
+    background-color: #11253D; /* Hover effect from dashboard */
+  }
+  

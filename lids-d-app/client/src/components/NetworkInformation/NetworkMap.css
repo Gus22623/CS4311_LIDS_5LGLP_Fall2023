@@ -1,0 +1,51 @@
+.network-map {
+    background-color: #434C56; /* Primary background color from dashboard */
+    color: white;
+    min-height: 100vh;
+    padding: 20px;
+    font-family: 'Libre Baskerville', serif; /* Consistent font with dashboard */
+  }
+  
+  .network-map svg {
+    border: 2px solid #9B9B9B; /* Border color from dashboard */
+    background-color: #294893; /* Background color from dashboard */
+    display: block; /* Center the SVG in div */
+    margin: 20px auto;
+  }
+  
+  .network-map rect {
+    fill: #11253D; /* Fill color for rectangles */
+    stroke: #9B9B9B; /* Stroke color from dashboard */
+  }
+  
+  .network-map text {
+    fill: white; /* Text color for contrast */
+    font-size: 14px; /* Consistent text size */
+  }
+  
+  .network-map circle {
+    stroke: none;
+  }
+  
+  .network-map .recognized {
+    fill: yellowgreen; /* Fill color for recognized status */
+  }
+  
+  .network-map .unrecognized {
+    fill: #e63939; /* Fill color for unrecognized status */
+  }
+  
+  .network-map-button {
+    background-color: lightgray;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    color: black;
+    cursor: pointer;
+    margin: 10px 0; /* Spacing around buttons */
+  }
+  
+  .network-map-button:hover {
+    background-color: #11253D; /* Hover effect from dashboard */
+  }
+  

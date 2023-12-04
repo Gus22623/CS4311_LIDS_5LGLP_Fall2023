@@ -157,7 +157,7 @@ const handleFilter = (criteria) => {
   };
   
   const handleNetworkInfo = () => {
-    navigate('/network-map')
+    navigate('/network-info')
   };
   const handleExportAlerts = () => {
     navigate('/export-alerts')
@@ -167,8 +167,6 @@ const handleFilter = (criteria) => {
     <div className="lids-dashboard">
       <div className="top-section">
       
-      <button className="go-back-button" onClick={handleConfigureServer}>Configure Server</button>
-      <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
       <button className="go-back-button" onClick={handleNetworkInfo}>Network Information</button>
       <button className="go-back-button" onClick={handleExportAlerts}>Export Alerts</button>
         <h1 className="h1-custom">LIDS D</h1>
