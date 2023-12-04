@@ -60,42 +60,6 @@ class config:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
             return
-        
-def connectToServer():
-    # TODO: Implement connection logic here
-    pass
-
-
-# Method to display saved PCAP file in Wireshark
-def open_pcap_file(pcap_file_path):
-    try:
-        """
-        NOTE: Wireshark needs to be in your system's PATH environment variable, or you can specify the path to the Wireshark executable below
-              You may need to restart your machine after installing Wireshark for the PATH variable to be updated
-        NOTE: Use yourPcapFile.pcapng format for the PCAP file
-        """
-        # List of common Wireshark executable names on different platforms
-        possible_executables = ["wireshark","Wireshark.exe"]
-
-
-        # Iterate through each directory in the PATH environment variable
-        for directory in os.environ["PATH"].split(os.pathsep):
-            for executable in possible_executables:
-                executable_path = os.path.join(directory, executable)
-                if os.path.isfile(executable_path):
-                    wireSharkPath = executable_path
-                    print(f"Found Wireshark executable at: {wireSharkPath}")
-                    print(f"Opening PCAP file: {pcap_file_path}")
-                    # Launch Wireshark with the provided PCAP file path
-                    
-                    """NOTE: Placeholder in case the above implementation does not work. Change the path to the Wireshark executable on your machine"""          
-                    # wireSharkPath = "C:\Program Files\Wireshark\Wireshark.exe" # ""<- Placeholder path""
-                    subprocess.Popen([wireSharkPath, pcap_file_path])
-                    
-    except FileNotFoundError:
-        print("Wireshark is not installed or not in your system's PATH.")
-    except Exception as e:
-        print(f"Error opening PCAP file: {str(e)}")
 
 # Class to handle packet capture
 class PacketCapture:
@@ -161,55 +125,6 @@ class PacketCapture:
             if not self.is_capturing:
                 break   
 
-            #-----------------------------------For Debugging-------------------------------------------------#
-            # Packet information
-            time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-            
-            # if 'IP' in packet:
-            #     src = packet.ip.src
-            #     dst = packet.ip.dst
-
-            #     if 'TCP' in packet:
-            #         protocol = 'TCP'
-            #         packet_length = int(packet.length)
-            #         flags = packet.tcp.flags
-
-            #         if 'SYN' in flags:
-            #             description = 'TCP Handshake SYN'
-            #         else:
-            #             description = 'Other TCP Packet'
-            #     elif 'UDP' in packet:
-            #         protocol = 'UDP'
-            #         packet_length = int(packet.length)
-            #         description = 'UDP Packet'
-            #     elif 'ICMP' in packet:
-            #         protocol = 'ICMP'
-            #         packet_length = int(packet.length)
-            #         description = 'ICMP Packet'
-            #     elif 'ARP' in packet:
-            #         protocol = 'ARP'
-            #         packet_length = int(packet.length)
-            #         description = 'ARP Packet'
-            #     elif 'HTTP' in packet:
-            #         protocol = 'HTTP'
-            #         packet_length = int(packet.length)
-            #         description = 'HTTP Packet'
-            #     else:
-            #         protocol = 'Other'
-            #         packet_length = int(packet.length)
-            #         description = "Unknown/Other Protocol"
-            
-            # """
-            # NOTE:Displaying packet information for debugging purposes
-            # Uncomment the following line to display packet information
-            # | |
-            # V V
-            # """
-            # print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
-            #------------------------------------------------------------------------------------#
-            
-            # TODO: Implement packet analysis logic here
-
             if 'IP' in packet:
                 src = packet.ip.src
                 dst = packet.ip.dst
@@ -223,18 +138,7 @@ class PacketCapture:
                 
                 # Check for potential port scan
                 self.detect_port_scan(packet, self.connection_attempts)
-                
-                # if 'TCP' in packet:
-                #     protocol = 'TCP'
-                #     packet_length = int(packet.length)
-                #     flags = packet.tcp.flags
-
-                #     if 'SYN' in flags:
-                #         description = 'TCP Handshake SYN'
-                #         if self.is_port_scan(packet, src):
-                #             self.detect_alert(packet, f"Port scan detected from {src}")
-                #     else:
-                #         description = 'Other TCP Packet'
+ 
                 
     # Method to detect port scan
     def detect_port_scan(self, packet, connection_attempts, threshold=50):
@@ -245,9 +149,6 @@ class PacketCapture:
         if connection_attempts[source_ip] >= threshold:
             self.create_alert(packet, self.port_scan)
             
-    def failed_login_attempt(self, packet):
-        # TODO: Implement failed login attempt logic here
-        pass
         
     # Method to create the alert and display it to the user
     def create_alert(self, packet, description):
