@@ -3,6 +3,12 @@
 # @author Carlos Alcazar and Denisse Fernandez
 # @version 0.2
 ###########################################################
+###########################################################
+# Modification
+# @author Alejandro Jaramillo & Ruth Avila
+# @version 0.2
+# @description: Add Alert Encryption functionality.
+###########################################################
 
 # LIDS_Agent back end code.
 
