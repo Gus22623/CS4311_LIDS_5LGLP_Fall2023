@@ -3,7 +3,7 @@
  * @version 1.0, 05/05/23
 */
 /**
- * @modifiers
+ * @modifiers Brittany Madrigal 
  */
 
 import React, { useEffect } from 'react';
