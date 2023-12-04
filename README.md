@@ -66,6 +66,9 @@ agent.
 If any questions, please follow the installation videos
 https://drive.google.com/drive/folders/1Eh6JXX4HZ5pSe2wiky3mZ30KnW1wrfZp?usp=share_link
 
+Demonstration videos for both LIDS and LIDS-D are included here 
+https://drive.google.com/drive/folders/10sGnnpWS2kP_TeYzhK-GjjzUwAZVHRZP?usp=drive_link
+
 ## Usage
 Provide an overview of how to use your IDS, including any command line arguments or options.
 LIDS GUI: To run LIDS using the GUI interface, follow the following steps:
