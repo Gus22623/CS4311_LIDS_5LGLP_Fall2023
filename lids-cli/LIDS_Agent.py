@@ -25,10 +25,9 @@ from db import cursor, db
 from prettytable import PrettyTable
 from collections import defaultdict
 from cryptography.fernet import Fernet
-import asyncio
 import socket
 from socket import AF_INET, SOCK_STREAM
-import json
+import time
 
 """
 NOTE: Wireshark needs to be installed in your machine to use pyshark
@@ -77,31 +76,31 @@ class Connection:
         self.address = None
         self.port = None
         self.serverSocket = None
-           
-    def connect_to_server(self, server_address, server_port):
+        self.key = None
+        self.cipher_suite = None
+
+    def connect_to_server(self, server_address, server_port, client_key):
         try:
             self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.connection.connect((server_address, server_port))
             self.address, self.port = self.connection.getsockname()
+            self.key = client_key
             print(f"Connected to {server_address} on port {server_port}")
+            #self.connection.sendall(self.key)
+            self.cipher_suite = Fernet(self.key)
+            print("Key sent to server.:", self.key)
         except Exception as e:
             print(f"Error connecting to server: {str(e)}")
         
     
     def send_alert(self, alert_data):
-        try: 
-            
-            # Generate a key
-            key = Fernet.generate_key()
-            # Create a Fernet object
-            cipher_suite = Fernet(key)
-            
+        try:             
             if self.connection:
                 # Concatenate alert data into a string
                 alert_str = f"{alert_data['level']},{alert_data['time']},{alert_data['source_ip']},{alert_data['dest_ip']},{alert_data['protocol']},{alert_data['source_port']},{alert_data['dest_port']},{alert_data['description']}"
                 
                  # Encrypt the alert string
-                encrypted_data = cipher_suite.encrypt(alert_str.encode())
+                encrypted_data = self.cipher_suite.encrypt(alert_str.encode())
                 
                 # Send alert to the server
                 self.connection.sendall(encrypted_data)
@@ -173,10 +172,13 @@ class PacketCapture:
         self.failed_login = "Failed Login Attempt"
         
         # Connection object and variables to LIDS-D
+        
+        # Generate a key for the client 
+        self.client_key = b'u-Tab2rqhRSPz5IO4yz_qy3fGtAQr-ohHahuPXSsidg='
         self.server_address = server_address
         self.server_port = server_port
         self.connection = Connection()
-        self.connection.connect_to_server(self.server_address, self.server_port)
+        self.connection.connect_to_server(self.server_address, self.server_port,self.client_key)
         
 
     # Method to start packet capture
@@ -332,11 +334,6 @@ class PacketCapture:
     # Method to create the alert and display it to the user
     def create_alert(self, packet, description):
         try:
-            # Generate a key
-            key = Fernet.generate_key()
-            # Create a Fernet object
-            cipher_suite = Fernet(key)
-            
             # Create an Alert object
             alert = Alert()
             alert.source = packet.ip.src
@@ -367,59 +364,10 @@ class PacketCapture:
                 alert_level = 1
             else:
                 alert_level = 0  # Set a default level if description doesn't match expected values
-
-            # Data to be encrypted
-            data_to_encrypt = {
-              "level": f"{alert_level}",
-              "time": f"{alert.time}",
-              "source_ip": f"{alert.source}",
-              "dest_ip": f"{alert.destination}",
-              "source_port": f"{alert.source_port}",
-                "dest_port": f"{alert.dest_port}",
-              "protocol": f"{alert.protocol}",
-              "description": f"{alert.description}"
-            }
-
-            # Encrypt Data
-            # encrypted_data = {key: cipher_suite.encrypt(value.encode()).decode() for key, value in data_to_encrypt.items()}
-
-            # Execute SQL query to insert the alert data into the 'alert' table
-            sql_insert_alert = (
-                "INSERT INTO alert (level, time, source_ip, dest_ip, src_port, dest_port, protocol, description) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            )
-
-            cursor.execute(sql_insert_alert, (
-                data_to_encrypt["level"],
-                data_to_encrypt["time"],
-                data_to_encrypt["source_ip"],
-                data_to_encrypt["dest_ip"],
-                data_to_encrypt["source_port"],
-                data_to_encrypt["dest_port"],
-                data_to_encrypt["protocol"],
-                data_to_encrypt["description"]
-                
-            ))
-
-            db.commit()
-            #print("Alert stored in the database.")
             
- 
-        except Exception as e:
-            print(f"Error storing alert in the database: {str(e)}")
             
-        try:     
             #-----------------------------------Forward Alert to LIDS-D-------------------------------------------------#
-            # Set the alert level based on the description
-            if description == self.unknown_IP:
-                alert_level = 3
-            elif description == self.port_scan:
-                alert_level = 2
-            elif description == self.failed_login:
-                alert_level = 1
-            else:
-                alert_level = 0  # Set a default level if description doesn't match expected values
-                
+    
             alert_d = {
                 "level": alert_level,
                 "time": alert.time,
@@ -432,6 +380,7 @@ class PacketCapture:
             }
             
             # Send alert to LIDS-D
+            time.sleep(1)
             self.connection.send_alert(alert_d)
             #------------------------------------------------------------------------------------------------------------#
         except Exception as e:
