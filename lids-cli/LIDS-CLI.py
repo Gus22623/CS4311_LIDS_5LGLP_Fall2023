@@ -129,20 +129,6 @@ def main():
                 os.write(1, f"Displaying alert...\n".encode())
                 continue
             
-            # Replay a pcap file
-            if user_input == "replay":
-                if packet_capture.configuration == None:
-                    os.write(1, f"Please configure LIDS before starting\n".encode())
-                    continue
-                os.write(1, f"Please enter path to pcap file\n".encode())
-                os.write(1, f"Example: C:\\Users\\User\\Desktop\\pcap.pcapng\n".encode())
-                
-                # Read user input
-                ReplaypcapFile = os.read(0,800).decode().strip()
-                # Replay the pcap file
-                packet_capture.replay_pcap(ReplaypcapFile)
-                continue
-            
             # If user input is not a command, display invalid command message
             else:
                 os.write(1, f"Invalid command: '{user_input}' type 'help' for commands.\n".encode())

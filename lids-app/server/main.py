@@ -75,7 +75,7 @@ if __name__ == '__main__':
     #app.run(debug=True, port=5000)
 
     # Create an instance of PacketCapture
-    packet_capture = PacketCapture(interface="Adapter for loopback traffic ca")
+    packet_capture = PacketCapture(interface="Wi-Fi")
     my_Config = config()
 
     # Flag to track if packet capture is active

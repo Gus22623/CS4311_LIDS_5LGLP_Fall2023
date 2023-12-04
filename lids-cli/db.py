@@ -5,6 +5,6 @@ db = pymysql.connect(
     user='root',
 
     database='lids-db',
-    port=3001
+    port=3306
 )
 cursor = db.cursor()

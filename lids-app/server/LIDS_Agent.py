@@ -152,69 +152,6 @@ class PacketCapture:
             self.restart_timer = threading.Timer(120.0, self.restart_capture_thread)
             self.restart_timer.daemon = True
             self.restart_timer.start()  # Start the timer
-    
-    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
-    
-    # # Start the replay thread
-    # def start_replay_thread(self):
-    #     if not self.is_replaying:
-    #         self.is_replaying = True
-    #         self.replay_thread = threading.Thread(target=self.replay_pcap)
-    #         self.replay_thread.start()
-    #         print("Replay started.")
-    #     else:
-    #         print("Replay already in progress.")   
-    
-    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
-    # # Method to stop the replay thread
-    # def stop_replay_thread(self):
-    #     if self.is_replaying:
-    #         self.is_replaying = False
-    #         self.replay_thread.join()
-    #         print("Replay stopped.")
-    #     else:
-    #         print("No replay in progress.")
-    
-    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
-    # Replay a packet capture from a PCAP file
-    def replay_pcap(self, pcap_file_path):
-        print("Successfully came into replay_pcap method")
-        try:
-            # Read the PCAP File
-            pcap_file = pcap_file_path
-            c = pyshark.FileCapture(pcap_file)
-        
-            for packet in c:
-                if 'IP' in packet:
-                    src = packet.ip.src
-                    dst = packet.ip.dst
-                    
-                    # Check if the source and destination IP addresses are in the configuration dictionary
-                    
-                    # Check if the source or destination ip have already beed detected as unknon IP, if so then just check for port scan from the IP
-                    if src in self.blacklist:
-                        self.detect_port_scan(packet, self.connection_attempts)
-                        continue
-                    if src not in self.configuration:
-                        self.blacklist.append(src)
-                        self.create_alert(packet, self.unknown_IP) 
-                    if dst in self.blacklist:
-                        self.detect_port_scan(packet, self.connection_attempts)
-                        continue
-                    if dst not in self.configuration:
-                        self.blacklist.append(dst)
-                        self.create_alert(packet, self.unknown_IP)
-                        
-                    # Check for potential port scan
-                    self.detect_port_scan(packet, self.connection_attempts)
-            
-            print("Replay complete.")
-        except FileNotFoundError:
-            print("Error: File not found.")
-            return
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
-            return
         
     # Method to capture packets
     def _capture_packets(self):
@@ -223,11 +160,11 @@ class PacketCapture:
                 break   
 
             #-----------------------------------For Debugging-------------------------------------------------#
-            # Packet information
-            time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-            if 'IP' in packet:
-                src = packet.ip.src
-                dst = packet.ip.dst
+            # # Packet information
+            # time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            # if 'IP' in packet:
+            #     src = packet.ip.src
+            #     dst = packet.ip.dst
 
                 if 'TCP' in packet:
                     protocol = 'TCP'

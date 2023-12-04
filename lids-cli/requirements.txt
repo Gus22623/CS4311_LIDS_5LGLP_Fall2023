@@ -1,0 +1,11 @@
+appdirs==1.4.4
+cffi==1.16.0
+cryptography==41.0.7
+lxml==4.9.3
+packaging==23.2
+prettytable==3.9.0
+pycparser==2.21
+PyMySQL==1.1.0
+pyshark==0.6
+termcolor==2.4.0
+wcwidth==0.2.12

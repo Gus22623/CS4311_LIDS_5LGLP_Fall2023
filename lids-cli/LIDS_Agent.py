@@ -5,6 +5,13 @@
 # @modifiers 
 ###########################################################
 
+###########################################################
+# Modification
+# @author Alejandro Jaramillo & Ruth Avila
+# @version 0.2
+# @description: Add Alert Encryption functionality.
+###########################################################
+
 # LIDS_Agent back end code.
 
 from http.client import HTTPResponse
@@ -17,6 +24,10 @@ import xml.etree.ElementTree as ET
 from db import cursor, db
 from prettytable import PrettyTable
 from collections import defaultdict
+from cryptography.fernet import Fernet
+import socket
+from socket import AF_INET, SOCK_STREAM
+import time
 
 """
 NOTE: Wireshark needs to be installed in your machine to use pyshark
@@ -59,9 +70,46 @@ class config:
             print(f"An error occurred: {str(e)}")
             return
         
-def connectToServer():
-    # TODO: Implement connection logic here
-    pass
+class Connection:    
+    def __init__(self):
+        self.connection = None
+        self.address = None
+        self.port = None
+        self.serverSocket = None
+        self.key = None
+        self.cipher_suite = None
+
+    def connect_to_server(self, server_address, server_port, client_key):
+        try:
+            self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.connection.connect((server_address, server_port))
+            self.address, self.port = self.connection.getsockname()
+            self.key = client_key
+            print(f"Connected to {server_address} on port {server_port}")
+            #self.connection.sendall(self.key)
+            self.cipher_suite = Fernet(self.key)
+            print("Key sent to server.:", self.key)
+        except Exception as e:
+            print(f"Error connecting to server: {str(e)}")
+        
+    
+    def send_alert(self, alert_data):
+        try:             
+            if self.connection:
+                # Concatenate alert data into a string
+                alert_str = f"{alert_data['level']},{alert_data['time']},{alert_data['source_ip']},{alert_data['dest_ip']},{alert_data['protocol']},{alert_data['source_port']},{alert_data['dest_port']},{alert_data['description']}"
+                
+                 # Encrypt the alert string
+                encrypted_data = self.cipher_suite.encrypt(alert_str.encode())
+                
+                # Send alert to the server
+                self.connection.sendall(encrypted_data)
+                #print("Alert sent to server.")
+            else:
+                print("Error: Not connected to server.")
+        except Exception as e:
+            print(f"Error sending alert to server: {str(e)}")
+            
 
 
 # Method to display saved PCAP file in Wireshark
@@ -97,7 +145,7 @@ def open_pcap_file(pcap_file_path):
 
 # Class to handle packet capture
 class PacketCapture:
-    def __init__(self, interface='Wi-Fi'):
+    def __init__(self, interface='Wi-Fi', server_address='127.0.0.1', server_port=5010):
         self.interface = interface
         # self.display_filter = display_filter - NOTE: Removed this filter to capture all packets
         self.capture = pyshark.LiveCapture(interface=interface)
@@ -122,6 +170,16 @@ class PacketCapture:
         self.unknown_IP = "Unknown IP Address"
         self.port_scan = "Port Scan"
         self.failed_login = "Failed Login Attempt"
+        
+        # Connection object and variables to LIDS-D
+        
+        # Generate a key for the client 
+        self.client_key = b'u-Tab2rqhRSPz5IO4yz_qy3fGtAQr-ohHahuPXSsidg='
+        self.server_address = server_address
+        self.server_port = server_port
+        self.connection = Connection()
+        self.connection.connect_to_server(self.server_address, self.server_port,self.client_key)
+        
 
     # Method to start packet capture
     def start_capture(self):
@@ -154,56 +212,12 @@ class PacketCapture:
             self.restart_timer.daemon = True
             self.restart_timer.start()  # Start the timer
     
-
-    
-    # NOTE: This method is not complete and needs to be tested, debugging and error handling needs to be implemented
-    # Replay a packet capture from a PCAP file
-    def replay_pcap(self, pcap_file_path):
-        print("Successfully came into replay_pcap method")
-        try:
-            # Read the PCAP File
-            pcap_file = pcap_file_path
-            c = pyshark.FileCapture(pcap_file)
-        
-            for packet in c:
-                if 'IP' in packet:
-                    src = packet.ip.src
-                    dst = packet.ip.dst
-                    
-                    # Check if the source and destination IP addresses are in the configuration dictionary
-                    
-                    # Check if the source or destination ip have already beed detected as unknon IP, if so then just check for port scan from the IP
-                    if src in self.blacklist:
-                        self.detect_port_scan(packet, self.connection_attempts)
-
-                    if src not in self.configuration:
-                        self.blacklist.append(src)
-                        self.create_alert(packet, self.unknown_IP)
-                        
-                    if dst in self.blacklist:
-                        self.detect_port_scan(packet, self.connection_attempts)
-                        
-                    if dst not in self.configuration:
-                        self.blacklist.append(dst)
-                        self.create_alert(packet, self.unknown_IP)
-                        
-                    # Check for potential port scan
-                    self.detect_port_scan(packet, self.connection_attempts)
-            
-            print("Replay complete.")
-        except FileNotFoundError:
-            print("Error: File not found.")
-            return
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
-            return
-        
     # Method to capture packets
     def _capture_packets(self):
         for packet in self.capture.sniff_continuously(packet_count=0):
             if not self.is_capturing:
                 break   
-
+            
             #-----------------------------------For Debugging-------------------------------------------------#
             # Packet information
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -215,6 +229,8 @@ class PacketCapture:
                     protocol = 'TCP'
                     packet_length = int(packet.length)
                     flags = packet.tcp.flags
+                    src_port = packet.tcp.srcport
+                    dest_port = packet.tcp.dstport
 
                     if 'SYN' in flags:
                         description = 'TCP Handshake SYN'
@@ -224,22 +240,32 @@ class PacketCapture:
                     protocol = 'UDP'
                     packet_length = int(packet.length)
                     description = 'UDP Packet'
+                    src_port = packet.udp.srcport
+                    dest_port = packet.udp.dstport
                 elif 'ICMP' in packet:
                     protocol = 'ICMP'
                     packet_length = int(packet.length)
                     description = 'ICMP Packet'
+                    src_port = ""
+                    dest_port = ""
                 elif 'ARP' in packet:
                     protocol = 'ARP'
                     packet_length = int(packet.length)
                     description = 'ARP Packet'
+                    src_port = ""
+                    dest_port = ""
                 elif 'HTTP' in packet:
                     protocol = 'HTTP'
                     packet_length = int(packet.length)
                     description = 'HTTP Packet'
+                    src_port = packet.tcp.srcport if 'tcp' in packet else ""
+                    dest_port = packet.tcp.dstport if 'tcp' in packet else ""
                 else:
                     protocol = 'Other'
                     packet_length = int(packet.length)
                     description = "Unknown/Other Protocol"
+                    src_port = ""
+                    dest_port = ""
                 
                 """
                 NOTE:Displaying packet information for debugging purposes
@@ -254,10 +280,12 @@ class PacketCapture:
                     'Destination': dst,
                     'Protocol': protocol,
                     'Length': packet_length,
-                    'Description': description
+                    'Description': description,
+                    'Source Port': src_port,
+                    'Destination Port': dest_port
                 }
 
-                print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}")
+                #print(f"Time: {time}, Source: {src}, Destination: {dst}, Protocol: {protocol}, Length: {packet_length}, Description: {description}, Source Port: {src_port}, Destination Port: {dest_port}")
             #------------------------------------------------------------------------------------#
             
             # TODO: Implement packet analysis logic here
@@ -275,6 +303,18 @@ class PacketCapture:
                 
                 # Check for potential port scan
                 self.detect_port_scan(packet, self.connection_attempts)
+                
+                # if 'TCP' in packet:
+                #     protocol = 'TCP'
+                #     packet_length = int(packet.length)
+                #     flags = packet.tcp.flags
+
+                #     if 'SYN' in flags:
+                #         description = 'TCP Handshake SYN'
+                #         if self.is_port_scan(packet, src):
+                #             self.detect_alert(packet, f"Port scan detected from {src}")
+                #     else:
+                #         description = 'Other TCP Packet'
                 
     # Method to detect port scan
     def detect_port_scan(self, packet, connection_attempts, threshold=50):
@@ -302,7 +342,19 @@ class PacketCapture:
             alert.length = packet.length
             alert.time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             alert.description = description
-
+           
+            if 'TCP' in packet:
+                alert.source_port = packet.tcp.srcport
+                alert.dest_port = packet.tcp.dstport
+            elif 'UDP' in packet:
+                alert.source_port = packet.udp.srcport
+                alert.dest_port = packet.udp.dstport
+            else:
+                alert.source_port = ""
+                alert.dest_port = ""
+            
+           
+       
             # Set the alert level based on the description
             if description == self.unknown_IP:
                 alert_level = 3
@@ -312,28 +364,28 @@ class PacketCapture:
                 alert_level = 1
             else:
                 alert_level = 0  # Set a default level if description doesn't match expected values
-
-            # Execute SQL query to insert the alert data into the 'alert' table
-            sql_insert_alert = (
-                "INSERT INTO alert (level, time, source_ip, dest_ip, protocol, port, description) "
-                "VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            )
-
-            cursor.execute(sql_insert_alert, (
-                alert_level,
-                alert.time,
-                alert.source,
-                alert.destination,
-                alert.protocol,
-                alert.length,
-                alert.description
-            ))
-
-            db.commit()
-            #print("Alert stored in the database.")
+            
+            
+            #-----------------------------------Forward Alert to LIDS-D-------------------------------------------------#
+    
+            alert_d = {
+                "level": alert_level,
+                "time": alert.time,
+                "source_ip": alert.source,
+                "dest_ip": alert.destination,
+                "protocol": alert.protocol,
+                "description": alert.description,
+                "source_port": alert.source_port,
+                "dest_port": alert.dest_port
+            }
+            
+            # Send alert to LIDS-D
+            time.sleep(1)
+            self.connection.send_alert(alert_d)
+            #------------------------------------------------------------------------------------------------------------#
         except Exception as e:
-            print(f"Error storing alert in the database: {str(e)}")
-
+            print(f"Error sending alert to LIDS-D: {str(e)}")
+            
 # Class to store alerts and its attributes
 class Alert:
     def __init__(self):
@@ -343,6 +395,8 @@ class Alert:
         self.length = None
         self.description = None
         self.time = None
+        self.source_port = None
+        self.dest_port = None
 
 
 class Alerts:
