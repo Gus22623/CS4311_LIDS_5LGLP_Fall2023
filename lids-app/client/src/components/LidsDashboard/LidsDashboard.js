@@ -36,6 +36,8 @@ function LidsDashboard() {
   const [alertListLevel2, setAlertListLevel2 ] = useState([]);
   const [alertListLevel3, setAlertListLevel3  ] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [ipAddress, setIpAddress] = useState(null);
+  const [capacity, setCapacity] = useState(null);
 
   useEffect(() => {
     const ourRequest = Axios.CancelToken.source()
@@ -57,6 +59,20 @@ function LidsDashboard() {
       ourRequest.cancel('Component unmounted');
     };
   }, []); 
+
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+      try {
+        const response = await fetch('https://httpbin.org/ip');
+        const data = await response.json();
+        setIpAddress(data.origin);
+      } catch (error) {
+        console.error('Error fetching IP address:', error);
+      }
+    };
+
+    fetchIpAddress();
+  }, []);
 
   const navigate = useNavigate(); // Added hook
 
@@ -164,6 +180,20 @@ const handleFilter = (criteria) => {
     });
   };
 
+  useEffect(() => {
+    const fetchCapacity = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/storage-capacity');
+        const data = await response.json();
+        setCapacity(data);
+      } catch (error) {
+        console.error('Error fetching Storage Capacity:', error);
+      }
+    };
+
+    fetchCapacity();
+  }, []);
+
 
   return(
     <div className="lids-dashboard">
@@ -172,10 +202,11 @@ const handleFilter = (criteria) => {
         <h1 className="h1-custom">LIDS Dashboard</h1>
       </div>
       <div className="lids-ip-connection">
-        <div className="lids-ip">LIDS IP: 127.0.0.1 </div>
+        <div className="lids-ip">LIDS IP: {ipAddress} </div>
         <div></div>
         <div className="connection-status">{connectionStatus}</div>
       </div>
+      <div className="capacity">Storage Capacity: {capacity}</div>
       <div className="bottom-section">
         {/* Index Table with Filtered Alerts */}
         <SortByDropdownFilter onSort={handleFilter} />
@@ -188,7 +219,7 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -199,7 +230,7 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -215,7 +246,7 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -226,7 +257,7 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -242,7 +273,7 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -253,7 +284,7 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -281,7 +312,7 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -292,7 +323,7 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -308,7 +339,7 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -319,7 +350,7 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -335,7 +366,7 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -346,7 +377,7 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -362,7 +393,7 @@ const handleFilter = (criteria) => {
                     <th>Time</th>
                     <th>Source IP</th>
                     <th>Dest IP</th>
-                    <th>Port</th>
+                    <th>Source Port</th>
                     <th>Description</th>
                   </tr>
                 </thead>
@@ -373,7 +404,7 @@ const handleFilter = (criteria) => {
                       <td>{val.time}</td>
                       <td>{val.source_ip}</td>
                       <td>{val.dest_ip}</td>
-                      <td>{val.port}</td>
+                      <td>{val.src_port}</td>
                       <td>{val.desc}</td>
                     </tr>
                   ))}
@@ -382,8 +413,9 @@ const handleFilter = (criteria) => {
             </div>
           )}        
           
-        <ErrorsDisplay errors={errors} />
+        {/*<ErrorsDisplay errors={errors} />
         <NotificationsDisplay notifications={notifications} />
+                  */}
       </div>
     </div>
   );

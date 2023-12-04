@@ -13,6 +13,8 @@ from LIDS_Agent import config
 from LIDS_Agent import Alerts
 from db import cursor, db
 import socket
+import sys
+import signal
 
 '''THIS WILL BE MOVED TO ROUTES for the queries (also will be used in React - Carlos)'''
 hostname=socket.gethostname()
@@ -63,11 +65,21 @@ def post_alert_details():
 def get_alert_details():
     return routes.get_alert_details()
 
+@app.route('/storage-capacity', methods=['GET'])
+def post_storage_capacity():
+    return routes.post_storage_capacity()
+
+def signal_handler(sig, frame):
+        print("Ctrl+C pressed. Exiting gracefully.")
+        sys.exit(0) 
+
+signal.signal(signal.SIGINT, signal_handler)
+
 if __name__ == '__main__':
     #app.run(debug=True, port=5000)
 
     # Create an instance of PacketCapture
-    packet_capture = PacketCapture(interface="Ethernet")
+    packet_capture = PacketCapture(interface="Wi-Fi")
     my_Config = config()
 
     # Flag to track if packet capture is active
@@ -80,6 +92,6 @@ if __name__ == '__main__':
         alerts = Alerts()
         alerts_table = alerts.displayAlerts()
         #print(alerts_table)
-        app.run(debug=True, port=5000)
+        app.run(debug=True, port=5011)
 
 

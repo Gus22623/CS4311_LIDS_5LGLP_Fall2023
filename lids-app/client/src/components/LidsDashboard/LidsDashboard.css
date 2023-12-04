@@ -124,3 +124,8 @@ Table thead{
   cursor: pointer;
   opacity: 0.9;
 }
+
+.capacity {
+  color: lightgray;  
+  text-align: center;
+}

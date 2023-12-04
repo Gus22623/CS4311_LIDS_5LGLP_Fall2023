@@ -1,9 +1,12 @@
 /**
  * @author X
  * @version 1.0, 05/05/23
+
 */
 /**
  * @modifiers Ruth Avila
+ * @modifers Alejandro Jaramillo & Ruth Avila
+ * @modified 11/18/23 - 11/19/23
  */
 
 import React from 'react';

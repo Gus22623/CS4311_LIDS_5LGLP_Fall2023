@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+
 import './NetworkMap.css';
 
 //Import the nessecary images for OS display
@@ -93,6 +94,7 @@ const DeviceNode = ({ device, destIp }) => {
 };
 //Setup for hardcoded examples of users of the network
 function NetworkMap() {
+
   const [devices, setDevices] = useState([
     { id: 1, os: 'Windows', status: 'recognized', x: 150, y: 100, host: "Diana"},
     { id: 2, os: 'Linux', status: 'unknown', x: 300, y: 150, host:"unknown"},
@@ -106,6 +108,7 @@ function NetworkMap() {
     // Fetch IP from database
     Axios.get('http://127.0.0.1:5000/getAlertsIP')
       .then((response) => {
+
         const destIpData = response.data.map(item => item.dest_ip);
         setDestIpData(destIpData);
       })
@@ -113,6 +116,7 @@ function NetworkMap() {
         console.error("Error fetching dest_ip data:", error);
       });
   }, []);
+
 
   // Handlers for navigation of buttons
   const handleConfigureServer = () => navigate('/config-server');

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+  <ipAddresses>192.168.1.1</ipAddresses>
+  <ipAddresses>192.168.1.2</ipAddresses>
+  <ipAddresses>192.168.1.3</ipAddresses>
+  <ipAddresses>192.168.1.4</ipAddresses>
+  <ipAddresses>192.168.1.5</ipAddresses>
+  <ipAddresses>192.168.1.6</ipAddresses>
+  <ipAddresses>192.168.1.7</ipAddresses>
+  <ipAddresses>192.168.1.8</ipAddresses>
+  <ipAddresses>192.168.1.9</ipAddresses>
+  <ipAddresses>192.168.1.10</ipAddresses>
+  <ipAddresses>192.168.1.11</ipAddresses>
+  <ipAddresses>192.168.1.12</ipAddresses>
+  <ipAddresses>192.168.1.13</ipAddresses>
+  <ipAddresses>192.168.1.14</ipAddresses>
+  <ipAddresses>192.168.1.15</ipAddresses>
+  <ipAddresses>192.168.1.16</ipAddresses>
+  <ipAddresses>192.168.1.17</ipAddresses>
+  <ipAddresses>192.168.1.18</ipAddresses>
+  <ipAddresses>192.168.1.19</ipAddresses>
+  <ipAddresses>192.168.1.20</ipAddresses>
+  <ipAddresses>10.0.0.1</ipAddresses>
+  <ipAddresses>10.0.0.2</ipAddresses>
+  <ipAddresses>10.0.0.3</ipAddresses>
+  <ipAddresses>10.0.0.4</ipAddresses>
+  <ipAddresses>10.0.0.5</ipAddresses>
+  <ipAddresses>10.0.0.245</ipAddresses>
+</root>
