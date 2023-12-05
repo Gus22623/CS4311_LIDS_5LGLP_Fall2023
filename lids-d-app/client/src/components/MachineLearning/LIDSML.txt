@@ -1,0 +1,24 @@
+# @author Josh Shoemaker
+
+Summary
+This code implements a Decision Tree Classifier for network data analysis, aiming to classify network traffic as either 'attack' or 'normal'. It uses the Python libraries pandas for data manipulation, SQLAlchemy for database interaction, and scikit-learn for machine learning. The process involves:
+
+Extracting data from a PostgreSQL database.
+Preparing the data by selecting relevant features.
+Splitting the dataset into training and validation sets.
+Training the Decision Tree Classifier.
+Evaluating and potentially tuning the model's hyperparameters based on validation performance.
+Description of the Decision Tree Classifier
+The Decision Tree Classifier in this code is a fundamental machine learning model used for classification tasks. In this context, it's applied to classify network traffic based on features like network protocol, IP addresses, service type, and bytes sent/received. Key aspects of the implementation include:
+
+Data Extraction and Preparation: Data is pulled from a PostgreSQL database into a pandas DataFrame. Features relevant to the classification task (network protocol, Source IP Address, Dest IP, Service, bytes sent/received) and the target variable (attack/normal) are selected.
+
+Train-Validation Split: The data is split into training and validation sets with a 70-30 ratio, providing a basis for training and subsequent performance evaluation.
+
+Model Training: A Decision Tree Classifier is trained with initial hyperparameters. The model learns to make decisions based on the data features to classify network traffic.
+
+Hyperparameter Tuning: Based on the initial validation performance, hyperparameters (like max_depth and min_samples_leaf) can be adjusted to improve model performance.
+
+Model Evaluation: The model's performance is evaluated using accuracy as a metric, comparing the predicted classifications against the actual labels in the validation set.
+
+Usage: After training and validation, the model is ready to predict classifications on new, unseen data.
