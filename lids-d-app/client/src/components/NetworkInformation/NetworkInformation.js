@@ -1,52 +1,63 @@
-/**
- * @author X
- * @version 1.0, 05/05/23
-*/
-/**
- * @modifiers
- */
+import React, { useState, useEffect } from 'react';
+import Axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import './NetworkInformation.css';
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import MenuOptions from '../MenuOptions/MenuOptions';
+// Whitelist of authorized IPs
+const AUTHORIZED_IPS = [
+  '10.0.0.1', '10.0.0.2', '10.0.0.3', '10.0.0.4', '10.0.0.5', '10.0.0.245'
+];
 
-class NetworkInformation extends React.Component {
-    render() {
-        return (
-            <div className="network-info-container">
+// Function to determine if an IP is recognized
+const isIpRecognized = (ip) => AUTHORIZED_IPS.includes(ip) ? 'recognized' : 'unrecognized';
 
-                <div className="recognized-devices">
-                    <div className="overlay-title">Recognized Devices</div>
-                    <div className="devices-toolbar">
-                        {/* Display recognized devices info like ID number, Name, IP address, and Connection Status */}
-                    </div>
-                </div>
+function NetworkInformation() {
+  const [destIpData, setDestIpData] = useState([]);
+  const navigate = useNavigate();
 
-                <div className="unknown-devices">
-                    <div className="overlay-title">Unknown Devices</div>
-                    <div className="devices-toolbar">
-                        {/* Display unknown devices info like IP address, Port number, and Protocol used */}
-                    </div>
-                </div>
+  useEffect(() => {
+    Axios.get('http://127.0.0.1:5000/getAlertsIP')
+      .then((response) => {
+        setDestIpData(response.data.map(item => ({
+          ip: item.dest_ip,
+          status: isIpRecognized(item.dest_ip)
+        })));
+      })
+      .catch((error) => {
+        console.error("Error fetching dest_ip data:", error);
+      });
+  }, []);
 
-                <div className="alerts-textbox">
-                    Alerts:
-                    {/* Display alerts here */}
-                </div>
+  // Handlers for navigation of buttons
+  const handleConfigureServer = () => navigate('/config-server');
+  const handleViewAlerts = () => navigate('/view-alerts');
+  const handleNetworkMap = () => navigate('/network-map');
 
-                <div className="alerts-toolbar">
-                    {/* Display the alerts info like Level, Time, IP, Port, Protocol, and Description */}
-                </div>
-
-                <button>View Node Map</button>
-
-                <MenuOptions />
-                <Link to="/network-map">
-                    <button>Network Map</button>
-                </Link>
-            </div>
-        );
-    }
+  return (
+    <div className='network-info'>
+      <button className="go-back-button" onClick={handleViewAlerts}>View Alerts</button>
+      <button className="go-back-button" onClick={handleNetworkMap}>Network Map</button>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {destIpData.map((item, index) => (
+            <tr key={index}>
+              <td>{item.ip}</td>
+              <td style={{ color: item.status === 'recognized' ? 'green' : 'red' }}>
+                {item.status === 'recognized' ? '✔' : '✖'}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default NetworkInformation;

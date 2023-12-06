@@ -3,7 +3,7 @@
  * @version 1.0, 05/05/23
 */
 /**
- * @modifiers
+ * @modifiers Ruth Avila & Brittany Madrigal 
  */
 
 import React from 'react';

@@ -3,7 +3,7 @@
  * @version 5.0, 11/26/23
 */
 /**
- * @modifiers
+ * @modifiers Ruth Avila & Brittany Madrigal 
  */
 
 import React, { useEffect, useState, Switch} from 'react';

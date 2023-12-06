@@ -1,9 +1,9 @@
 /**
- * @author X
- * @version 1.0, 05/05/23
+ * @author Carlos Alcazar
+ * @version 1.0, 09/05/23
 */
 /**
- * @modifiers
+ * @modifiers Brittany Madrigal 
  */
 
 import React, { useEffect } from 'react';
